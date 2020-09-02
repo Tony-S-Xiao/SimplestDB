@@ -1,2 +1,5 @@
-﻿  simplestdb.cpp
+﻿  parser.cpp
+  simplestdb.cpp
+  token.cpp
+  Generating Code...
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe
