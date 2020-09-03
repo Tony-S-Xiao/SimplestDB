@@ -11,7 +11,7 @@ class Parser
 public:
 	~Parser();
 	Parser();
-
+	Token* initToken(string);
 
 private:
 	Token* token;
