@@ -19,3 +19,4 @@ private:
 	string data;
 
 };
+
