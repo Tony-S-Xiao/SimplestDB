@@ -10,6 +10,7 @@ using namespace std;
 
 string printPrompt(string);
 
+
 int main()
 {
 	while (true)
@@ -25,9 +26,6 @@ int main()
 		if (t == nullptr) continue;
 		cout << t->getText() << endl;
 	}
-
-
-
 	return 0;
 }
 
@@ -51,3 +49,4 @@ string printPrompt(string toPrint)
 
 	return "";
 }
+
