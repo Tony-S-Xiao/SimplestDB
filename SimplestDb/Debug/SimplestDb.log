@@ -1,2 +1,82 @@
-﻿  simplestdb.cpp
-  SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe
+﻿  simplestdb.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(32,19): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(17): message : see reference to function template instantiation 'void sdb::Row::setField<int>(int,T)' being compiled
+          with
+          [
+              T=int
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(38,1): error C2679: binary '[': no operator found which takes a right-hand operand of type '_Ty2' (or there is no acceptable conversion)
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1508,27): message : could be 'const _Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept const'
+          with
+          [
+              _Ty=int
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1498,21): message : or       '_Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept'
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(38,1): message : while trying to match the argument list '(std::vector<int,std::allocator<int>>, _Ty2)'
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(42,1): error C2679: binary '[': no operator found which takes a right-hand operand of type '_Ty2' (or there is no acceptable conversion)
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(2602,26): message : could be 'std::_Vb_reference<std::_Wrap_alloc<std::allocator<std::_Vbase>>> std::vector<bool,std::allocator<bool>>::operator [](unsigned int) noexcept'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(2592,32): message : or       'std::vector<bool,std::allocator<bool>>::const_reference std::vector<bool,std::allocator<bool>>::operator [](unsigned int) noexcept const'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(42,1): message : while trying to match the argument list '(std::vector<bool,std::allocator<bool>>, _Ty2)'
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(46,1): error C2679: binary '[': no operator found which takes a right-hand operand of type '_Ty2' (or there is no acceptable conversion)
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1508,27): message : could be 'const _Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept const'
+          with
+          [
+              _Ty=unsigned char
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1498,21): message : or       '_Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept'
+          with
+          [
+              _Ty=unsigned char
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(46,1): message : while trying to match the argument list '(std::vector<unsigned char,std::allocator<unsigned char>>, _Ty2)'
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(50,1): error C2679: binary '[': no operator found which takes a right-hand operand of type '_Ty2' (or there is no acceptable conversion)
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1508,27): message : could be 'const _Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept const'
+          with
+          [
+              _Ty=std::string
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\vector(1498,21): message : or       '_Ty &std::vector<_Ty,std::allocator<_Ty>>::operator [](const unsigned int) noexcept'
+          with
+          [
+              _Ty=std::string
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(50,1): message : while trying to match the argument list '(std::vector<std::string,std::allocator<std::string>>, _Ty2)'
+          with
+          [
+              _Ty2=std::pair<SQLTypes,int>
+          ]
+  simplestdb_row.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(9,20): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...

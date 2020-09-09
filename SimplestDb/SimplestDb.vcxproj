@@ -138,15 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="parser.cpp" />
-    <ClCompile Include="row.cpp" />
-    <ClCompile Include="simplestdb.cpp" />
-    <ClCompile Include="token.cpp" />
+    <ClCompile Include="simplestdb.cc" />
+    <ClCompile Include="simplestdb_row.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="parser.h" />
-    <ClInclude Include="row.h" />
-    <ClInclude Include="token.h" />
+    <ClInclude Include="simplestdb_row.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
