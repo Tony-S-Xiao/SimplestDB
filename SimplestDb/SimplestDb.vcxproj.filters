@@ -15,15 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="simplestdb_row.cc">
+    <ClCompile Include="simplestdb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simplestdb.cc">
+    <ClCompile Include="simplestdb_token.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_parser.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simplestdb_row.h">
+    <ClInclude Include="simplestdb_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include"simplestdb_row.h"
+//VERSION 1
 
 #include<utility>
 #include<string>
@@ -32,6 +32,7 @@ sdb::Row::Row(uint32_t id, std::vector<SQLTypes> header) : id(id) {
 	}
 }
 
+//TODO: deserialization
 sdb::Row::Row(std::vector<SQLTypes> header, std::vector<unsigned char> data) {
 	//TODO
 }
@@ -40,88 +41,103 @@ sdb::Row::~Row() {
 	//nothing to delete
 }
 
+//TODO: check if there is a better way to use these templates
+//
 template<typename A>
 A sdb::Row::getField(int i) const {
+	return NULL;
+}
+template<> int sdb::Row::getField<int>(int i) const {
 	if (i < 0 || i >= header.size())
-		return typeid(A) == typeid(std::string) ? "" : NULL;
-
-	auto curr = header.find(i);
-	switch (curr->first) {
-	  case SQLTypes::INTEGER: {
-		return integer[curr->second];
-	  }
-	  case SQLTypes::BOOLEAN: {
-		return boolean[curr->second];
-	  }
-	  case SQLTypes::BLOB: {
-		return blob[curr->second];
-	  }
-	  case SQLTypes::VARCHAR: {
-		return varchar[curr->second];
-	  }
-	}
-	return typeid(A) == typeid(std::string) ? "" : NULL;
+		return 0;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::const_iterator curr = header.find(i);
+	return integer[curr->second.second];
+}
+template<> unsigned char sdb::Row::getField<unsigned char>(int i) const {
+	if (i < 0 || i >= header.size())
+		return 0;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::const_iterator curr = header.find(i);
+	return blob[curr->second.second];
+}
+template<> bool sdb::Row::getField<bool>(int i) const {
+	if (i < 0 || i >= header.size())
+		return 0;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::const_iterator curr = header.find(i);
+	return boolean[curr->second.second];
+}
+template<> std::string sdb::Row::getField<std::string>(int i) const {
+	if (i < 0 || i >= header.size())
+		return 0;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::const_iterator curr = header.find(i);
+	return varchar[curr->second.second];
 }
 
-//template<typename T>
-//void sdb::Row::setField(int i, T data) {
-//	if (i < 0 || i >= header.size())
-//		return;
-//
-//	auto curr = header.find(i);
-//	switch (curr->first) {
-//	  case SQLTypes::INTEGER: {
-//		integer[curr->second] = data;
-//		break;
-//	  }
-//	  case SQLTypes::BOOLEAN: {
-//		boolean[curr->second] = data;
-//		break;
-//	  }
-//	  case SQLTypes::BLOB: {
-//		blob[curr->second] = data;
-//		break;
-//	  }
-//	  case SQLTypes::VARCHAR: {
-//		varchar[curr->second] = data;
-//		break;
-//	  }
-//	}
-//	return;
-//}
+template<typename T> 
+void sdb::Row::setField(int i, T data) {
+	return;
+}
+template<> void sdb::Row::setField<int>(int i, int data) {
+	if (i < 0 || i >= header.size())
+		return;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::iterator curr = header.find(i);
+	integer[curr->second.second] = data;
+	return;
+}
+template<> void sdb::Row::setField<unsigned char>(int i, unsigned char data) {
+	if (i < 0 || i >= header.size())
+		return;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::iterator curr = header.find(i);
+	blob[curr->second.second] = data;
+	return;
+}
+template<> void sdb::Row::setField<bool>(int i, bool data) {
+	if (i < 0 || i >= header.size())
+		return;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::iterator curr = header.find(i);
+	boolean[curr->second.second] = data;
+	return;
+}
+template<> void sdb::Row::setField<std::string>(int i, std::string data) {
+	if (i < 0 || i >= header.size())
+		return;
+	std::unordered_map<int, std::pair<SQLTypes, int>>::iterator curr = header.find(i);
+	varchar[curr->second.second] = data;
+	return;
+}
 
 uint32_t sdb::Row::getID() const {
 	return id;
 }
 
+//TODO: serialization into a page
 std::vector<unsigned char> sdb::Row::serialize() const {
 	return {};
 }
 
+//TODO: better text justification for long rows
 void sdb::Row::printRow() const {
-	//auto curr = header.find(0);
-	//for (int i = 0; i < header.size(); ++i) {
-	//	
-	//	switch (curr->first) {
-	//	  case SQLTypes::INTEGER: {
-	//		
-	//		break;
-	//	  }
-	//	  case SQLTypes::BOOLEAN: {
-	//		
-	//		break;
-	//	  }
-	//	  case SQLTypes::BLOB: {
-	//		
-	//		break;
-	//	  }
-	//	  case SQLTypes::VARCHAR: {
-	//		
-	//		break;
-	//	  }
-	//	  default:
-	//	}
-	//}
-
+	auto curr = header.begin();
+	while (curr != header.end()) {
+		switch (curr->second.first) {
+		  case SQLTypes::INTEGER: {
+			  std::cout << integer[curr->second.second] << " | ";
+			break;
+		  }
+		  case SQLTypes::BOOLEAN: {
+			  std::cout << boolean[curr->second.second] << " | ";
+			break;
+		  }
+		  case SQLTypes::BLOB: {
+			  std::cout << blob[curr->second.second] << " | ";
+			break;
+		  }
+		  case SQLTypes::VARCHAR: {
+			  std::cout << varchar[curr->second.second] << " | ";
+			break;
+		  }
+		}
+		++curr;
+	}
+	std::cout << std::endl;
 	return;
 }

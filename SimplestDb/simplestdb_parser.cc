@@ -1,34 +1,51 @@
+#include"simplestdb_token.h"
 #include"simplestdb_parser.h"
 
 #include<string>
 #include<iostream>
+#include<vector>
 
-#include"simplestdb_token.h"
+sdb::Parser::~Parser() {}
 
+sdb::Parser::Parser() {}
 
-Parser::Parser()
+sdb::Token* sdb::Parser::createToken(std::string input)
 {
-
-}
-
-Parser::~Parser()
-{
-
-}
-
-Token* Parser::initToken(string userInput)
-{
-	if(userInput.length() == 0) return nullptr;
-
-	if (userInput[0] == '.')
-	{
-		string s = userInput.substr(1, userInput.find_first_of(' ')-1);
-		
-		if (s == string("config"))
-		{
-			return new Token(Command::CONFIG, userInput.substr(userInput.find_first_of(' ') + 1));
+	//find the type of command
+	int first_space = input.find_first_of(" ");
+	std::string first_word = input.substr(0, first_space);
+	Token* output_token = nullptr;
+	//parse the string: 
+	//get rid of all delimiters(separate words)
+	//to lower case all letters
+	std::vector<std::string> parsed{ "" };
+	for (int i = 0; i < input.size(); ++i) {
+		//convert to lower case
+		if (input[i] <= 'z' && input[i] >= 'a' ||
+			input[i] <= 'Z' && input[i] >= 'A')
+			parsed[parsed.size() - 1].push_back(std::tolower(input[i]));
+		//start new word
+		else if ((--parsed.end())->size() != 0) {
+			parsed.push_back("");
 		}
+		std::cout << *(--parsed.end()) << std::endl;
 	}
 	
-	return nullptr;
+	if (first_word == std::string("create")) {
+		output_token = new CreateTableToken();
+		output_token->setTokenType("create");
+		output_token->setName(parsed[2]);
+	} else if (first_word == std::string("select")) {
+		output_token = new MetaToken();
+		output_token->setTokenType("select");
+
+	} else if (first_word == std::string("insert")) {
+		output_token = new CreateTableToken();
+		output_token->setTokenType("insert");
+
+	} else {
+		std::cout << "Invalid SQL command." << std::endl;
+	}
+	return output_token;
 }
+

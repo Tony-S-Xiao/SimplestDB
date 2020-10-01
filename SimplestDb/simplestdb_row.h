@@ -4,67 +4,56 @@
 // initialize to the correct capacity
 // rows should not:
 // hold column order
-//
-// 
+
 #pragma once
+#include"simplestdb_table.h"
+
 #include<vector>
 #include<string>
 #include<utility>
 #include<unordered_map>
 
-enum SQLTypes { INTEGER, BOOLEAN, BLOB, VARCHAR };
+//rows are kept on disk in the following order: row id  32 bit | short string pointer | short blob pointer | integers 32 bit | boolean 8 bit
+enum class SQLTypes { INTEGER, BOOLEAN, VARCHAR, BLOB };
+//name -> type, offset in bytes in serialized row
+
 
 namespace sdb {
 
 class Row {
  public:
-  Row(uint32_t id, std::vector<SQLTypes> header);
-  Row(std::vector<SQLTypes> header, std::vector<unsigned char> data);
+  Row(uint32_t id, Table* table_header, unsigned char* free_start, unsigned char* free_end); // TODO: how to make the pointers const?
+  Row(Table* table_header, unsigned char* data_start, unsigned char* data_end);
   ~Row();
 
-  uint32_t getID() const;
-  // i is the overall index in the table. no type check is done
-  template<typename A>
-  A getField(int i) const;
+  template <typename T>
+  T get(std::string);
 
-  template<typename T>
-  void setField(int i, T data) {
-	  if (i < 0 || i >= header.size())
-		  return;
+  //returns false on set failure ie. not enough free space;
+  //returns true on success;
+  template <typename T>
+  bool set(std::string, T);
 
-	  auto curr = header.find(i);
-	  switch (curr->first) {
-	  case INTEGER: {
-		  integer[curr->second] = data;
-		  break;
-	  }
-	  case BOOLEAN: {
-		  boolean[curr->second] = data;
-		  break;
-	  }
-	  case BLOB: {
-		  blob[curr->second] = data;
-		  break;
-	  }
-	  case VARCHAR: {
-		  varchar[curr->second] = data;
-		  break;
-	  }
-	  }
-	  return;
-  }
+  void print();
 
+  void pack();
 
-  std::vector<unsigned char> serialize() const;
-  void printRow() const;
-  
+  //move() is called if the new start location != old data start
+  void giveSpace(unsigned char* new_free_space_start, unsigned char* new_free_space_end);
+  //returns false if the move failed
+  bool move(unsigned char* new_location_start, unsigned char* new_location_end);
+
+  size_t size();
+
  private:
-  uint32_t id;
-  std::unordered_map<int, std::pair<SQLTypes, int>> header;
-  std::vector<int> integer;
-  std::vector<bool> boolean;
-  std::vector<std::string> varchar;
-  std::vector<unsigned char> blob;
+   Table* header;
+
+  //the data is in [data_start, data_end)
+  //total space is in [data_start, free_end)
+  //free space is in [data_end, free_end)
+  unsigned char* data_start;
+  unsigned char* data_end;
+  unsigned char* free_end;
 };
 
-} //namespace sdb
+}//namespace sdb

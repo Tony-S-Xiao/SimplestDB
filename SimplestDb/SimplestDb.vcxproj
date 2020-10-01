@@ -18,6 +18,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="simplestdb.cc" />
+    <ClCompile Include="simplestdb_parser.cc" />
+    <ClCompile Include="simplestdb_token.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="simplestdb_parser.h" />
+    <ClInclude Include="simplestdb_token.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{ECAC88E8-C94A-4120-AFCC-FE07BF92CA82}</ProjectGuid>
@@ -137,13 +146,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="simplestdb.cc" />
-    <ClCompile Include="simplestdb_row.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="simplestdb_row.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
