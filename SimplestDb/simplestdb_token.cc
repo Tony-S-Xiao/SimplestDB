@@ -2,10 +2,10 @@
 
 sdb::Token::Token() {}
 sdb::Token::~Token() {}
-void sdb::Token::setTokenType(std::string _type) {
+void sdb::Token::setTokenType(sdb::TokenType _type) {
 	token_type = _type;
 }
-std::string sdb::Token::getTokenType() {
+sdb::TokenType sdb::Token::getTokenType() {
 	return token_type;
 }
 sdb::MetaToken::MetaToken() {}

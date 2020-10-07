@@ -1,4 +1,3 @@
-#include"simplestdb_token.h"
 #include"simplestdb_parser.h"
 
 #include<string>
@@ -8,7 +7,11 @@
 sdb::Parser::~Parser() {}
 
 sdb::Parser::Parser() {}
-
+/*
+1.separate into keywords and non-keywords arrays
+2.create token
+3.fill token and convert to useable data
+*/
 sdb::Token* sdb::Parser::createToken(std::string input)
 {
 	//find the type of command
@@ -28,24 +31,43 @@ sdb::Token* sdb::Parser::createToken(std::string input)
 		else if ((--parsed.end())->size() != 0) {
 			parsed.push_back("");
 		}
-		std::cout << *(--parsed.end()) << std::endl;
+		//TODELETE: std::cout << *(--parsed.end()) << std::endl;
 	}
-	
-	if (first_word == std::string("create")) {
-		output_token = new CreateTableToken();
-		output_token->setTokenType("create");
-		output_token->setName(parsed[2]);
-	} else if (first_word == std::string("select")) {
+	//metatoken creation
+	if (first_word[0] == '.') {
 		output_token = new MetaToken();
-		output_token->setTokenType("select");
+		first_word = first_word.substr(1);
+		if (first_word == std::string("open")) {
+			output_token->setTokenType(TokenType::OPEN);
+			output_token->appendData(parsed[1]);
+		} else if (first_word == std::string("cd")) {
+			output_token->setTokenType(TokenType::CD);
+			output_token->appendData(parsed[1]);
+		} else if (first_word == std::string("help")) {
+			output_token->setTokenType(TokenType::HELP);
+		} else if (first_word == std::string("create")) {
+			output_token->setTokenType(TokenType::CREATE);
+			output_token->appendData(parsed[1]); // TODO: ".create" causes crash since there is no other words
+		}
+	}
+	//sqltoken creation
+	else if (first_word == std::string("create")) {
+		output_token = new CreateTableToken();
+		output_token->setTokenType(TokenType::NEW);
+
+	} else if (first_word == std::string("select")) {
+		output_token = new QueryToken();
+		output_token->setTokenType(TokenType::READ);
 
 	} else if (first_word == std::string("insert")) {
-		output_token = new CreateTableToken();
-		output_token->setTokenType("insert");
+		output_token = new WriteToken();
+		output_token->setTokenType(TokenType::WRITE);
 
 	} else {
-		std::cout << "Invalid SQL command." << std::endl;
+	std::cout << "Invalid SQL command." << std::endl;
 	}
+		
+	
 	return output_token;
 }
 

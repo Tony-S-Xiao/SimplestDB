@@ -1,6 +1,10 @@
 ﻿  simplestdb.cc
   simplestdb_parser.cc
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_parser.cc(22,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_parser.cc(37,24): error C2039: 'setName': is not a member of 'sdb::Token'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_token.h(9): message : see declaration of 'sdb::Token'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_parser.cc(26,52): warning C4244: 'argument': conversion from 'int' to 'const _Elem', possible loss of data
+          with
+          [
+              _Elem=char
+          ]
   Generating Code...
+  SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

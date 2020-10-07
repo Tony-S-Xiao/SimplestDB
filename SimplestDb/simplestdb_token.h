@@ -4,18 +4,19 @@
 
 namespace sdb {
 
-enum class SQLType { VARCHAR, INTEGER, DATETIME, BOOLEAN };
+enum class SQLType { NUL, VARCHAR, INTEGER, DATETIME, BOOLEAN };
+enum class TokenType { NUL, READ, WRITE, NEW, OPEN, CD, HELP, CREATE };
 
 class Token {
  public:
-   void setTokenType(std::string);
-   std::string getTokenType();
+   void setTokenType(sdb::TokenType);
+   TokenType getTokenType();
    ~Token();
-   ////metatoken override
-   //virtual void appendData(std::string) = 0;
-   //virtual void appendCommand(std::string) = 0;
-   //virtual std::vector<std::string>* getData() = 0;
-   //virtual std::vector<std::string>* getCommand() = 0;
+   //metatoken override
+   virtual void appendData(std::string) { return; };
+   virtual void appendCommand(std::string) { return; };
+   virtual std::vector<std::string>* getData() { return nullptr; };
+   virtual std::vector<std::string>* getCommand() { return nullptr; };
    //sqltoken override
    virtual void setName(std::string) { return; };
    virtual std::string getName() { return""; };
@@ -23,16 +24,10 @@ class Token {
    virtual void pushBackColumnType(SQLType) { return; };
    virtual std::vector<std::string>* getColumnNames() { return nullptr; };
    virtual std::vector<SQLType>* getColumnTypes() { return nullptr; };
-   ////writetoken override
-   //virtual void appendData(std::string) = 0;
-   //virtual std::vector<std::string>* getData() = 0;
-   ////querytoken override
-   //virtual void setCondition(std::string) = 0;
-   //virtual std::string getCondition() = 0;
  protected:
    Token();
  private:
-     std::string token_type;
+     TokenType token_type{ TokenType::NUL };
 };
 
 class MetaToken : public Token {

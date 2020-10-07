@@ -1,4 +1,3 @@
-
 #include"simplestdb_token.h"
 #include"simplestdb_parser.h"
 
@@ -10,14 +9,29 @@
 
 int main()
 {
-	sdb::WriteToken wow;
 	sdb::Parser parser_wow;
 	std::string input;
 	while (true) {
-		std::cout << "enter command" << std::endl;
+		std::cout << "enter command:" << std::endl;
 		getline(std::cin, input); //NOTE: cin automatically separate by whitespace
 
 		sdb::Token* curr_token = parser_wow.createToken(input);
+		switch (curr_token->getTokenType()) {
+		case sdb::TokenType::OPEN:
+			std::cout << "open" << std::endl;
+			break;
+		case sdb::TokenType::CD:
+			std::cout << "cd" << std::endl;
+			break;
+		case sdb::TokenType::HELP:
+			std::cout << "help" << std::endl;
+			break;
+		case sdb::TokenType::CREATE:
+			std::cout << "create" << std::endl;
+			break;
+		default: 
+			std::cout << "wow" << std::endl;
+		}
 		delete curr_token;
 	}
 	
@@ -27,3 +41,4 @@ int main()
 
 
 
+	
