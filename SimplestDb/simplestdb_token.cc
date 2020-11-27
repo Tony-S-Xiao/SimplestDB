@@ -8,21 +8,21 @@ void sdb::Token::setTokenType(sdb::TokenType _type) {
 sdb::TokenType sdb::Token::getTokenType() {
 	return token_type;
 }
+void sdb::Token::setWellFormedFlag(bool state) {
+	well_formed = state;
+	return;
+}
+bool sdb::Token::getWellFormedFlag() {
+	return well_formed;
+}
 sdb::MetaToken::MetaToken() {}
 sdb::MetaToken::~MetaToken() {}
 void sdb::MetaToken::appendData(std::string _data) {
 	data.push_back(_data);
 	return;
 }
-void sdb::MetaToken::appendCommand(std::string _command) {
-	command.push_back(_command);
-	return;
-}
 std::vector<std::string>* sdb::MetaToken::getData() {
 	return &data;
-}
-std::vector<std::string>* sdb::MetaToken::getCommand() {
-	return &command;
 }
 
 void sdb::SQLToken::setName(std::string _name) {

@@ -1,10 +1,16 @@
 ﻿  simplestdb.cc
-  simplestdb_parser.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_parser.cc(22,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_parser.cc(26,52): warning C4244: 'argument': conversion from 'int' to 'const _Elem', possible loss of data
-          with
-          [
-              _Elem=char
-          ]
+  simplestdb_disk_manager.cpp
+  simplestdb_page.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(37,54): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned short', possible loss of data
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(51,75): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned short', possible loss of data
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(70,21): warning C4018: '<': signed/unsigned mismatch
+  simplestdb_page_footer.cpp
+  simplestdb_row.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(43,52): warning C4458: declaration of 'slot_id' hides class member
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(29,19): message : see declaration of 'sdb::DBRow::slot_id'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(61,52): warning C4100: 'i': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(64,53): warning C4100: 'i': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(67,63): warning C4100: 'type': unreferenced formal parameter
   Generating Code...
-  SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(63): error C4716: 'sdb::TableHeaderRow::getColumnName': must return a value
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(66): error C4716: 'sdb::TableHeaderRow::getColumnType': must return a value

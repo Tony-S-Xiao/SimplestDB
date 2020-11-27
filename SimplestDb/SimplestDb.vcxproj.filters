@@ -18,15 +18,33 @@
     <ClCompile Include="simplestdb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simplestdb_token.cc">
+    <ClCompile Include="simplestdb_page.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simplestdb_parser.cc">
+    <ClCompile Include="simplestdb_disk_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_page_footer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_row.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simplestdb_parser.h">
+    <ClInclude Include="simplestdb_page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_disk_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_page_footer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_row.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lru_cache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_token.h">

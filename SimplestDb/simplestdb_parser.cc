@@ -1,73 +1,136 @@
 #include"simplestdb_parser.h"
 
+#include<algorithm>
 #include<string>
+#include<sstream>
 #include<iostream>
 #include<vector>
 
 sdb::Parser::~Parser() {}
 
 sdb::Parser::Parser() {}
-/*
-1.separate into keywords and non-keywords arrays
-2.create token
-3.fill token and convert to useable data
-*/
-sdb::Token* sdb::Parser::createToken(std::string input)
-{
-	//find the type of command
-	int first_space = input.find_first_of(" ");
-	std::string first_word = input.substr(0, first_space);
-	Token* output_token = nullptr;
-	//parse the string: 
-	//get rid of all delimiters(separate words)
-	//to lower case all letters
-	std::vector<std::string> parsed{ "" };
-	for (int i = 0; i < input.size(); ++i) {
-		//convert to lower case
-		if (input[i] <= 'z' && input[i] >= 'a' ||
-			input[i] <= 'Z' && input[i] >= 'A')
-			parsed[parsed.size() - 1].push_back(std::tolower(input[i]));
-		//start new word
-		else if ((--parsed.end())->size() != 0) {
-			parsed.push_back("");
+
+sdb::Token* sdb::Parser::createToken(std::vector<std::string>* input_vector) {
+	if (input_vector->size() == 0) {
+		delete input_vector;
+		return nullptr;
+	}
+	Token* result{ nullptr };
+	std::vector<std::string> keywords;
+	std::vector<std::vector<std::string>> data{};
+
+	//meta token creation
+	if ((*input_vector)[0][0] == '.') {
+		std::string command_word = (*input_vector)[0].substr(1);
+		std::transform(command_word.begin(), command_word.end(), command_word.begin(), [](char a) { return std::tolower(a); });
+		result = new MetaToken();
+
+		if (command_word == std::string("open")) {
+			result->setTokenType(TokenType::OPEN);
+			if (input_vector->size() > 1) {
+				result->appendData((*input_vector)[1]);
+				result->setWellFormedFlag(true);
+			}
 		}
-		//TODELETE: std::cout << *(--parsed.end()) << std::endl;
-	}
-	//metatoken creation
-	if (first_word[0] == '.') {
-		output_token = new MetaToken();
-		first_word = first_word.substr(1);
-		if (first_word == std::string("open")) {
-			output_token->setTokenType(TokenType::OPEN);
-			output_token->appendData(parsed[1]);
-		} else if (first_word == std::string("cd")) {
-			output_token->setTokenType(TokenType::CD);
-			output_token->appendData(parsed[1]);
-		} else if (first_word == std::string("help")) {
-			output_token->setTokenType(TokenType::HELP);
-		} else if (first_word == std::string("create")) {
-			output_token->setTokenType(TokenType::CREATE);
-			output_token->appendData(parsed[1]); // TODO: ".create" causes crash since there is no other words
+		else if (command_word == std::string("cd")) {
+			result->setTokenType(TokenType::CD);
+			if (input_vector->size() > 1) {
+				result->appendData((*input_vector)[1]);
+				result->setWellFormedFlag(true);
+			}
+		}
+		else if (command_word == std::string("help")) {
+			result->setTokenType(TokenType::HELP);
+			result->setWellFormedFlag(true);
+		}
+		else if (command_word == std::string("create")) {
+			result->setTokenType(TokenType::CREATE);
+			if (input_vector->size() > 1) {
+				result->appendData((*input_vector)[1]);
+				result->setWellFormedFlag(true);
+			}
 		}
 	}
-	//sqltoken creation
-	else if (first_word == std::string("create")) {
-		output_token = new CreateTableToken();
-		output_token->setTokenType(TokenType::NEW);
 
-	} else if (first_word == std::string("select")) {
-		output_token = new QueryToken();
-		output_token->setTokenType(TokenType::READ);
+	//SQL token creation
+	else {
+		//separate input into keywords and data(separated)
+		int curr_index = 0;
+		while (curr_index < input_vector->size()) {
+			std::string lowercase_word = (*input_vector)[curr_index];
+			std::transform(lowercase_word.begin(), lowercase_word.end(), lowercase_word.begin(), [](char a) { return std::tolower(a); });
 
-	} else if (first_word == std::string("insert")) {
-		output_token = new WriteToken();
-		output_token->setTokenType(TokenType::WRITE);
+			while (SQLCommandSet.find(lowercase_word) != SQLCommandSet.end() && curr_index < input_vector->size()) {
+				keywords.push_back(lowercase_word);
+				++curr_index;
+				if (curr_index < input_vector->size()) {
+					lowercase_word = (*input_vector)[curr_index];
+					std::transform(lowercase_word.begin(), lowercase_word.end(), lowercase_word.begin(), [](char a) { return std::tolower(a); });
+				}
+			}
+			data.push_back({});
+			while (SQLCommandSet.find(lowercase_word) == SQLCommandSet.end() && curr_index < input_vector->size()) {
+				std::string data_word = (*input_vector)[curr_index];
+				
+				if (data_word.front() == ',' || data_word.front() == '(') {
+					data_word = data_word.substr(1);
+				}
+				if (data_word.back() == ',' || data_word.back() == ')') {
+					data_word.pop_back();
+				}
+				if(data_word.size() > 0)
+				data[data.size()-1].push_back(data_word);
+				++curr_index;
+				if (curr_index < input_vector->size()) {
+					lowercase_word = (*input_vector)[curr_index];
+					std::transform(lowercase_word.begin(), lowercase_word.end(), lowercase_word.begin(), [](char a) { return std::tolower(a); });
+				}
+			}
+		}
+	//create token
+		if (keywords.size() > 0 && keywords[0] == std::string("select")) {
+			std::cout << "select" << std::endl;
 
-	} else {
-	std::cout << "Invalid SQL command." << std::endl;
+
+		}
+		else if (keywords.size() > 1 && keywords[0] == std::string("insert") && keywords[1] == std::string("into")) {
+			std::cout << "insert" << std::endl;
+		}
+		else if (keywords.size() > 1 && keywords[0] == std::string("create") && keywords[1] == std::string("table")) {
+			std::cout << "create" << std::endl;
+			result = new CreateTableToken();
+			result->setName(data[0][0]);
+			for (int i = 1; i < data[0].size()-1; i+=2) {
+				result->pushBackColumnName(data[0][i]);
+				SQLType type = SQLType::NUL;
+				
+			}
+		}
 	}
-		
-	
-	return output_token;
+	//if (result == nullptr || !result->getWellFormedFlag()) {
+	//	std::cout << "Invalid command." << std::endl;
+	//	delete result;
+	//	result = nullptr;
+	//}
+	delete input_vector;
+	return result;
 }
 
+//sdb::SQLType convertSQLType(std::string input) {
+//	
+//}
+
+std::vector<std::string>* sdb::Parser::getCommand() {
+	std::string curr_line{ "" };
+	std::getline(std::cin, curr_line);
+	std::istringstream iss(curr_line);
+
+	std::vector<std::string>* input = new std::vector<std::string>();
+	std::string curr_word = "";
+
+	while (iss >> curr_word) {
+		input->push_back(curr_word);
+	}
+	std::cin.clear();
+	return input;
+}

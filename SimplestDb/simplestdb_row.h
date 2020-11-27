@@ -1,59 +1,100 @@
-// rows should:
-// constant time get/set to any field given offset
-// serialize/deserialize itself 
-// initialize to the correct capacity
-// rows should not:
-// hold column order
-
 #pragma once
-#include"simplestdb_table.h"
+#include"simplestdb_token.h"
 
-#include<vector>
 #include<string>
-#include<utility>
-#include<unordered_map>
 
-//rows are kept on disk in the following order: row id  32 bit | short string pointer | short blob pointer | integers 32 bit | boolean 8 bit
-enum class SQLTypes { INTEGER, BOOLEAN, VARCHAR, BLOB };
-//name -> type, offset in bytes in serialized row
-
+/*
+**these objects interprets the blocks of data on the pages
+**all objects are two pointers specifying the range of 
+**the elements on the page
+*/
 
 namespace sdb {
 
+//base class to be derived
 class Row {
- public:
-  Row(uint32_t id, Table* table_header, unsigned char* free_start, unsigned char* free_end); // TODO: how to make the pointers const?
-  Row(Table* table_header, unsigned char* data_start, unsigned char* data_end);
+public:
   ~Row();
-
-  template <typename T>
-  T get(std::string);
-
-  //returns false on set failure ie. not enough free space;
-  //returns true on success;
-  template <typename T>
-  bool set(std::string, T);
-
-  void print();
-
-  void pack();
-
-  //move() is called if the new start location != old data start
-  void giveSpace(unsigned char* new_free_space_start, unsigned char* new_free_space_end);
-  //returns false if the move failed
-  bool move(unsigned char* new_location_start, unsigned char* new_location_end);
-
-  size_t size();
-
- private:
-   Table* header;
-
-  //the data is in [data_start, data_end)
-  //total space is in [data_start, free_end)
-  //free space is in [data_end, free_end)
-  unsigned char* data_start;
-  unsigned char* data_end;
-  unsigned char* free_end;
+  //returns the size in bytes of the row
+  size_t physicalSize();
+protected:
+  //class is abstract effectively 
+  Row(void*, void*);
+  //start of the data range
+  unsigned char* start_ptr;
+  //one past the end of the data range
+  unsigned char* end_ptr;
 };
 
-}//namespace sdb
+//this object implements the db object to be instantiated on the first page of the .sdb file
+//holds names of tables, page id pairs
+
+class DBRow : public Row {
+public:
+  DBRow(void*, void*);
+  ~DBRow();
+  std::string getTableName();
+  void setTableName(std::string name);
+  unsigned int getPageId();
+  void setPageId(unsigned int slot_id = 0);
+private:
+  unsigned int* slot_id;
+  unsigned char* name_end_ptr;
+};
+
+//this object contains the table header information for the table
+//contains column name, type information
+//together with TablePointerRow makes up table pages
+
+class TableHeaderRow : public Row {
+public:
+  TableHeaderRow(void*, void*);
+  ~TableHeaderRow();
+  unsigned short getNumOfCol();
+  std::string getColumnName(int i);
+  SQLType getColumnType(int i);
+  void appendCol(std::string name, SQLType type);
+private:
+  unsigned short* num_of_col;
+  unsigned short* start_of_pointers;  
+};
+
+//this object contains the space available on the page
+//implements the table directory
+//contains page id, space available pairs
+//together with TableHeaderRows makes up table pages
+class TablePointerRow : public Row {
+public:
+  TablePointerRow(void*, void*);
+  ~TablePointerRow();
+  void setPageId(unsigned int index);
+  void setSpaceAvailable(unsigned short space);
+  unsigned int getPageId();
+  unsigned short getSpaceAvailable();
+private:
+  unsigned short* space_available_on_page;
+  unsigned int* page_id;
+};
+
+//this object contains the data of the table itself
+class DataRow : public Row {
+public:
+  DataRow(void*, void*);
+  ~DataRow();
+  //std::string getDateTime(int i); //TODO: use std chronos
+  int getInteger(int i);
+  bool getBoolean(int i);
+  std::string getVarChar(int i);
+
+private:
+  //used to manipulate the first byte of the row(flag byte)
+  char* flag_ptr;
+  void helpSetBit(int i, bool set);
+  bool helpGetBit(int i);
+  void setFlagBit(SQLType type);
+  void unsetFlagBit(SQLType type);
+  bool getFlagBit(SQLType type);
+
+};
+
+}//sdb namespace

@@ -20,11 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="simplestdb.cc" />
-    <ClCompile Include="simplestdb_parser.cc" />
-    <ClCompile Include="simplestdb_token.cc" />
+    <ClCompile Include="simplestdb_disk_manager.cpp" />
+    <ClCompile Include="simplestdb_page.cc" />
+    <ClCompile Include="simplestdb_page_footer.cpp" />
+    <ClCompile Include="simplestdb_row.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simplestdb_parser.h" />
+    <ClInclude Include="lru_cache.h" />
+    <ClInclude Include="simplestdb_disk_manager.h" />
+    <ClInclude Include="simplestdb_page.h" />
+    <ClInclude Include="simplestdb_page_footer.h" />
+    <ClInclude Include="simplestdb_row.h" />
     <ClInclude Include="simplestdb_token.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

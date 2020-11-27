@@ -4,13 +4,15 @@
 
 namespace sdb {
 
-enum class SQLType { NUL, VARCHAR, INTEGER, DATETIME, BOOLEAN };
-enum class TokenType { NUL, READ, WRITE, NEW, OPEN, CD, HELP, CREATE };
+enum class SQLType { NUL = 0, VARCHAR = 1, INTEGER = 2, DATETIME = 4, BOOLEAN = 8 };
+enum class TokenType { NUL = 0, READ = 1, WRITE = 2, NEW = 4, OPEN = 8, CD = 16, HELP = 32, CREATE = 64 };
 
 class Token {
  public:
    void setTokenType(sdb::TokenType);
    TokenType getTokenType();
+   void setWellFormedFlag(bool);
+   bool getWellFormedFlag();
    ~Token();
    //metatoken override
    virtual void appendData(std::string) { return; };
@@ -27,7 +29,8 @@ class Token {
  protected:
    Token();
  private:
-     TokenType token_type{ TokenType::NUL };
+   bool well_formed{ false };
+   TokenType token_type{ TokenType::NUL };
 };
 
 class MetaToken : public Token {
@@ -35,13 +38,10 @@ class MetaToken : public Token {
     MetaToken();
     ~MetaToken();
     void appendData(std::string);
-    void appendCommand(std::string);
     std::vector<std::string>* getData();
-    std::vector<std::string>* getCommand();
   protected:
   private:
-      std::vector<std::string> data;
-      std::vector<std::string> command;
+    std::vector<std::string> data;
 };
 
 class SQLToken : public Token {
