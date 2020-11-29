@@ -24,6 +24,7 @@
     <ClCompile Include="simplestdb_page.cc" />
     <ClCompile Include="simplestdb_page_footer.cpp" />
     <ClCompile Include="simplestdb_row.cc" />
+    <ClCompile Include="simplestdb_util.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lru_cache.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="simplestdb_page_footer.h" />
     <ClInclude Include="simplestdb_row.h" />
     <ClInclude Include="simplestdb_token.h" />
+    <ClInclude Include="simplestdb_util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

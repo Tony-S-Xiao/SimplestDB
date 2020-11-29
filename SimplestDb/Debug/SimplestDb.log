@@ -1,4 +1,6 @@
 ﻿  simplestdb.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(20,12): error C2039: 'setSlotId': is not a member of 'sdb::DBRow'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(32): message : see declaration of 'sdb::DBRow'
   simplestdb_disk_manager.cpp
   simplestdb_page.cc
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(37,54): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned short', possible loss of data
@@ -6,11 +8,12 @@ C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(51,75): warning 
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(70,21): warning C4018: '<': signed/unsigned mismatch
   simplestdb_page_footer.cpp
   simplestdb_row.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(43,52): warning C4458: declaration of 'slot_id' hides class member
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.h(29,19): message : see declaration of 'sdb::DBRow::slot_id'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(61,52): warning C4100: 'i': unreferenced formal parameter
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(64,53): warning C4100: 'i': unreferenced formal parameter
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(67,63): warning C4100: 'type': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(187,34): warning C4100: 'i': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(190,35): warning C4100: 'i': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(193,42): warning C4100: 'i': unreferenced formal parameter
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(208,19): warning C4189: 'pos_to_varchar': local variable is initialized but not referenced
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(268,30): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
   Generating Code...
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(63): error C4716: 'sdb::TableHeaderRow::getColumnName': must return a value
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(66): error C4716: 'sdb::TableHeaderRow::getColumnType': must return a value
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(189): error C4716: 'sdb::DataRow::getInteger': must return a value
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(195): error C4716: 'sdb::DataRow::getVarChar': must return a value
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_row.cc(192): error C4716: 'sdb::DataRow::getBoolean': must return a value

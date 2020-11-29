@@ -56,7 +56,7 @@ public:
   void appendCol(std::string name, SQLType type);
 private:
   unsigned short* num_of_col;
-  unsigned short* start_of_pointers;  
+  unsigned short* start_of_pointers;
 };
 
 //this object contains the space available on the page
@@ -85,10 +85,11 @@ public:
   int getInteger(int i);
   bool getBoolean(int i);
   std::string getVarChar(int i);
-
+  void loadData(const std::vector<char>& all_bool, const std::vector<int>& all_integer,
+    const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string);
 private:
   //used to manipulate the first byte of the row(flag byte)
-  char* flag_ptr;
+  unsigned char* flag_ptr;
   void helpSetBit(int i, bool set);
   bool helpGetBit(int i);
   void setFlagBit(SQLType type);

@@ -30,6 +30,9 @@
     <ClCompile Include="simplestdb_row.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplestdb_util.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplestdb_page.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

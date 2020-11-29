@@ -2,6 +2,7 @@
 
 #include<queue>
 #include<stdexcept>
+#include<cstring>
 
 sdb::Row::Row(void* start, void* end) {
   start_ptr = static_cast<unsigned char*>(start);
@@ -176,7 +177,7 @@ unsigned short sdb::TablePointerRow::getSpaceAvailable() {
 }
 
 sdb::DataRow::DataRow(void* start, void* end) : Row(start, end) {
-  flag_ptr = static_cast<char*>(start);
+  flag_ptr = static_cast<unsigned char*>(start);
 }
 
 sdb::DataRow::~DataRow() {
@@ -186,8 +187,69 @@ sdb::DataRow::~DataRow() {
 int sdb::DataRow::getInteger(int i) {
 
 }
-bool getBoolean(int i);
-std::string getVarChar(int i);
+bool sdb::DataRow::getBoolean(int i) {
+
+}
+std::string sdb::DataRow::getVarChar(int i) {
+
+}
+/*
+** Quickly load data into a block on a Page.
+** Writes the vectors of data into the block using pointers and memcpy.
+** Booleans are 1 byte chars to avoid using std::vector<bool> specialization.
+*/
+void sdb::DataRow::loadData(const std::vector<char>& all_bool, const std::vector<int>& all_integer,
+  const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string) {
+  unsigned char* write_pos_ptr{ static_cast<unsigned char*>(start_ptr) };
+  ++write_pos_ptr;
+  unsigned short* pos_to_datetime{ nullptr };
+  unsigned short* pos_to_integer{ nullptr };
+  unsigned short* pos_to_boolean{ nullptr };
+  unsigned short* pos_to_varchar{ nullptr };
+  /*
+  ** populate block from the left
+  */
+  if (all_datetime.size() > 0) {
+    setFlagBit(SQLType::DATETIME);
+    pos_to_datetime = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += 2;
+  }
+  if (all_integer.size() > 0) {
+    setFlagBit(SQLType::INTEGER);
+    pos_to_integer = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += 2;
+  }
+  if (all_bool.size() > 0) {
+    setFlagBit(SQLType::BOOLEAN);
+    pos_to_boolean = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += 2;
+  }
+  /*
+  ** copy data and increment write pointer and set the pos
+  */
+  if (all_datetime.size() > 0) {
+    std::memcpy(write_pos_ptr, all_datetime.data(), all_datetime.size() * sizeof(char));
+    write_pos_ptr += all_datetime.size() * sizeof(char);
+    *pos_to_datetime = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+  }
+  if (all_integer.size() > 0) {
+    std::memcpy(write_pos_ptr, all_integer.data(), all_integer.size() * sizeof(int));
+    write_pos_ptr += all_integer.size() * sizeof(int);
+    *pos_to_integer = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+  }
+  if (all_bool.size() > 0) {
+    std::memcpy(write_pos_ptr, all_bool.data(), all_bool.size() * sizeof(char));
+    write_pos_ptr += all_bool.size() * sizeof(char);
+    *pos_to_boolean = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+  }
+
+  if (all_string.size() > 0) {
+    setFlagBit(SQLType::VARCHAR);
+
+  }
+  //
+}
+
 void sdb::DataRow::helpSetBit(int i, bool set) {
   char mask = 0b00000001;
   for (int j = 0; j < i; ++j) {
