@@ -1,8 +1,10 @@
 #include"simplestdb_row.h"
+#include"simplestdb_util.h"
 
 #include<queue>
 #include<stdexcept>
 #include<cstring>
+#include<vector>
 
 sdb::Row::Row(void* start, void* end) {
   start_ptr = static_cast<unsigned char*>(start);
@@ -176,8 +178,54 @@ unsigned short sdb::TablePointerRow::getSpaceAvailable() {
   return *space_available_on_page;
 }
 
-sdb::DataRow::DataRow(void* start, void* end) : Row(start, end) {
-  flag_ptr = static_cast<unsigned char*>(start);
+sdb::DataRow::DataRow(void* start, void* end) : 
+  Row(start, end), flag_ptr(static_cast<unsigned char*>(start)) {
+  unsigned short* offset{ reinterpret_cast<unsigned short*>(flag_ptr + 1) };
+  std::vector<unsigned short*> offset_arr;
+  if (getFlagBit(SQLType::DATETIME)) {
+    offset_arr.push_back(offset);
+    ++offset;
+  }
+  if (getFlagBit(SQLType::INTEGER)) {
+    offset_arr.push_back(offset);
+    ++offset;
+  }
+  if (getFlagBit(SQLType::BOOLEAN)) {
+    offset_arr.push_back(offset);
+    ++offset;
+  }
+  int i = 0;
+  if (getFlagBit(SQLType::DATETIME)) {
+    datetime_begin_ptr = reinterpret_cast<char*>(flag_ptr + getHeaderSize() - 1);
+    datetime_end_ptr = reinterpret_cast<char*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+    ++i;
+  }
+  if (getFlagBit(SQLType::INTEGER)) {
+    if (i == 0) {
+      int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+    }
+    else {
+      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i+1]);
+    }
+    ++i;
+  }
+  if (getFlagBit(SQLType::BOOLEAN)) {
+    if (i == 0) {
+      int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+    }
+    else {
+      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i + 1]);
+    }
+    ++i;
+  }
+  if (getFlagBit(SQLType::VARCHAR)) {
+    ++offset;
+    offset_arr.push_back(offset);
+  }
 }
 
 sdb::DataRow::~DataRow() {
@@ -185,44 +233,55 @@ sdb::DataRow::~DataRow() {
 }
 
 int sdb::DataRow::getInteger(int i) {
+  char* trav_it = reinterpret_cast<char*>(start_ptr);
+  if (getFlagBit(SQLType::INTEGER)) {
+    if (getFlagBit(SQLType::DATETIME) {
+      
+    }
+    else {
 
+    }
+  }
+  throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
 bool sdb::DataRow::getBoolean(int i) {
+  if (getFlagBit(SQLType::INTEGER)) {
 
+  }
+  throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
 std::string sdb::DataRow::getVarChar(int i) {
+  if (getFlagBit(SQLType::INTEGER)) {
 
+  }
+  throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
-/*
-** Quickly load data into a block on a Page.
-** Writes the vectors of data into the block using pointers and memcpy.
-** Booleans are 1 byte chars to avoid using std::vector<bool> specialization.
-*/
-void sdb::DataRow::loadData(const std::vector<char>& all_bool, const std::vector<int>& all_integer,
+
+void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
   const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string) {
   unsigned char* write_pos_ptr{ static_cast<unsigned char*>(start_ptr) };
   ++write_pos_ptr;
-  unsigned short* pos_to_datetime{ nullptr };
-  unsigned short* pos_to_integer{ nullptr };
-  unsigned short* pos_to_boolean{ nullptr };
-  unsigned short* pos_to_varchar{ nullptr };
+  unsigned int* pos_to_datetime{ nullptr };
+  unsigned int* pos_to_integer{ nullptr };
+  unsigned int* pos_to_boolean{ nullptr };
+  unsigned int* pos_to_varchar{ nullptr };
   /*
   ** populate block from the left
   */
   if (all_datetime.size() > 0) {
     setFlagBit(SQLType::DATETIME);
-    pos_to_datetime = reinterpret_cast<unsigned short*>(write_pos_ptr);
-    write_pos_ptr += 2;
+    pos_to_datetime = reinterpret_cast<unsigned int*>(write_pos_ptr);
+    write_pos_ptr += sizeof(int);
   }
   if (all_integer.size() > 0) {
     setFlagBit(SQLType::INTEGER);
-    pos_to_integer = reinterpret_cast<unsigned short*>(write_pos_ptr);
-    write_pos_ptr += 2;
+    pos_to_integer = reinterpret_cast<unsigned int*>(write_pos_ptr);
+    write_pos_ptr += sizeof(int);
   }
   if (all_bool.size() > 0) {
     setFlagBit(SQLType::BOOLEAN);
-    pos_to_boolean = reinterpret_cast<unsigned short*>(write_pos_ptr);
-    write_pos_ptr += 2;
+    pos_to_boolean = reinterpret_cast<unsigned int*>(write_pos_ptr);
+    write_pos_ptr += sizeof(int);
   }
   /*
   ** copy data and increment write pointer and set the pos
@@ -230,24 +289,33 @@ void sdb::DataRow::loadData(const std::vector<char>& all_bool, const std::vector
   if (all_datetime.size() > 0) {
     std::memcpy(write_pos_ptr, all_datetime.data(), all_datetime.size() * sizeof(char));
     write_pos_ptr += all_datetime.size() * sizeof(char);
-    *pos_to_datetime = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_datetime = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
   }
   if (all_integer.size() > 0) {
     std::memcpy(write_pos_ptr, all_integer.data(), all_integer.size() * sizeof(int));
     write_pos_ptr += all_integer.size() * sizeof(int);
-    *pos_to_integer = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_integer = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
   }
   if (all_bool.size() > 0) {
     std::memcpy(write_pos_ptr, all_bool.data(), all_bool.size() * sizeof(char));
     write_pos_ptr += all_bool.size() * sizeof(char);
-    *pos_to_boolean = static_cast<unsigned short>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_boolean = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
   }
-
+  /* Copy the contents of serialized string
+  */
   if (all_string.size() > 0) {
     setFlagBit(SQLType::VARCHAR);
-
+    std::string serialized_string{ sdb::serializeStringVec(all_string) };
+    std::memcpy(write_pos_ptr, serialized_string.data(), serialized_string.size() * sizeof(char));
   }
-  //
+}
+
+int sdb::DataRow::getHeaderSize() {
+  return 1 +
+    sizeof(int) * getFlagBit(SQLType::DATETIME) +
+    sizeof(int) * getFlagBit(SQLType::INTEGER) +
+    sizeof(int) * getFlagBit(SQLType::BOOLEAN) +
+    sizeof(int) * getFlagBit(SQLType::VARCHAR);
 }
 
 void sdb::DataRow::helpSetBit(int i, bool set) {

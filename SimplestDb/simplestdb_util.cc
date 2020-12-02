@@ -4,11 +4,11 @@ std::string sdb::serializeStringVec(const std::vector<std::string>& string_arr) 
   std::string serialized_string{ "" };
   for (int i = 0; i < string_arr.size(); ++i) {
     int curr_string_size = string_arr[i].size();
-    /* Push placeholder characters( bytes ) */
+    /* Push 4 placeholder characters( bytes ) */
     for (int j = 0; j < sizeof(int); ++j) {
       serialized_string.push_back(' ');
     }
-    /* Copy the integer into string */
+    /* Copy the integer into the string */
     typename std::string::iterator write_pos_iter = serialized_string.end();
     write_pos_iter -= sizeof(int);
     memcpy(&*write_pos_iter, &curr_string_size, sizeof(int));
@@ -17,5 +17,15 @@ std::string sdb::serializeStringVec(const std::vector<std::string>& string_arr) 
 }
 
 std::vector<std::string> sdb::deserializeFormattedString(const std::string& input_string) {
+  int num_of_bytes{ 0 };
+  std::vector<std::string> result{};
+  typename std::string::const_iterator read_pos_iter = input_string.begin();
 
+  while (read_pos_iter < input_string.end()) {
+    memcpy(&num_of_bytes, &*read_pos_iter, sizeof(int));
+    read_pos_iter += sizeof(int);
+    result.push_back(input_string.substr(std::distance(read_pos_iter, input_string.begin()), num_of_bytes));
+    read_pos_iter += num_of_bytes;
+  }
+  return result;
 }
