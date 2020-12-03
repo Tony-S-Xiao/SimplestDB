@@ -27,9 +27,9 @@ void* sdb::SlottedPage::getAddressOfElement(unsigned short index) {
 		return static_cast<void*>(&data[index]);
 }
 //slot id uses 2 footer slots. one for pointer to the block. one for the size of the block
-std::pair<void*, void*> sdb::SlottedPage::getBlock(int slot_id) {
-		unsigned short start = (*footer)[slot_id];
-		unsigned short end = start + (*footer)[slot_id + 1];
+std::pair<void*, void*> sdb::SlottedPage::getBlock(int page_id) {
+		unsigned short start = (*footer)[page_id];
+		unsigned short end = start + (*footer)[page_id + 1];
 		return { static_cast<void*>(&data[start]), static_cast<void*>(&data[end]) };
 }
 size_t sdb::SlottedPage::physicalSize() {

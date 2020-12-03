@@ -9,6 +9,8 @@
 #include<unordered_map>
 #include<fstream>
 
+void test();
+
 int main()
 {
   sdb::DiskManager disk;
@@ -23,4 +25,14 @@ int main()
   test_page->setPrevPage(99999);
   disk.writeToSlot(test_page, 0);
   return 0;
+}
+
+void test() {
+  sdb::DiskManager disk;
+  disk.open("test_db.sdb");
+  disk.zeroOutSlot(0);
+  disk.closeCurrFile();
+  disk.open("test_db.sdb");
+  sdb::SlottedPage* test_page = disk.readFromSlot(0);
+
 }

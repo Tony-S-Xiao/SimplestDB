@@ -6,56 +6,34 @@
 #include<cstring>
 #include<vector>
 
-sdb::Row::Row(void* start, void* end) {
-  start_ptr = static_cast<unsigned char*>(start);
-  end_ptr = static_cast<unsigned char*>(end);
-}
-sdb::Row::~Row() {
-
+sdb::Row::Row(std::byte* begin, std::byte* end) :
+  row_begin_(begin), row_end_(end) {
 }
 size_t sdb::Row::physicalSize() {
-  return end_ptr - start_ptr;
+  return row_end_ - row_begin_;
 }
 
-sdb::DBRow::DBRow(void* start, void* end) : Row(start, end) {
-  slot_id = static_cast<unsigned int*>(end);
-  --slot_id;
-  name_end_ptr = reinterpret_cast<unsigned char*>(slot_id);
-}
-sdb::DBRow::~DBRow() {
-
+sdb::DBRow::DBRow(std::byte* begin, std::byte* end) : Row(begin, end) {
+  page_id_ = reinterpret_cast<uint32_t*>(end) - 1;
+  tablename_end_ = reinterpret_cast<std::byte*>(page_id_);
 }
 std::string sdb::DBRow::getTableName() {
-  std::string ans{ "" };
-  unsigned char* trav = start_ptr;
-  while (trav != name_end_ptr) {
-    ans.push_back(*trav);
-    ++trav;
-  }
-  return ans;
+  return std::string(reinterpret_cast<char*>(row_begin_), tablename_end_ - row_begin_);
 }
-void sdb::DBRow::setTableName(std::string name) {
-  unsigned char* trav = start_ptr;
-  auto name_it = name.begin();
-  while (trav != name_end_ptr && name_it != name.end()) {
-    *trav = *name_it;
-    ++trav;
-    ++name_it;
-  }
+uint32_t sdb::DBRow::getPageId() {
+  return *page_id_;
 }
-unsigned int sdb::DBRow::getPageId() {
-  return *slot_id;
+void sdb::DBRow::setTableName(const std::string& name) {
+  memcpy(reinterpret_cast<char*>(row_begin_), name.data(), name.size());
 }
-void sdb::DBRow::setPageId(unsigned int page_id) {
-  *this->slot_id = page_id;
+void sdb::DBRow::setPageId(uint32_t page_id) {
+  *page_id_ = page_id;
 }
 
-sdb::TableHeaderRow::TableHeaderRow(void* start, void* end) :
-  Row(start, end),
-  num_of_col(static_cast<unsigned short*>(start)),
-  start_of_pointers(num_of_col +1)
-{
-
+sdb::TableHeaderRow::TableHeaderRow(std::byte* begin, std::byte* end) :
+  Row(begin, end),
+  num_of_col(static_cast<unsigned short*>(begin),
+  start_of_pointers(num_of_col +1) {
 }
 sdb::TableHeaderRow::~TableHeaderRow() {
 
@@ -94,7 +72,7 @@ void sdb::TableHeaderRow::appendCol(std::string name, SQLType type) {
 
   //shift data over using buffer
   //buffer allows for 1 pass solution
-  while (data_shift_ptr_start != reinterpret_cast<char*>(end_ptr)) {
+  while (data_shift_ptr_start != reinterpret_cast<char*>(row_end_)) {
     if (shift_two.size() < 2) {
       shift_two.push(*data_shift_ptr_start);
     }
@@ -143,14 +121,14 @@ void sdb::TableHeaderRow::appendCol(std::string name, SQLType type) {
   ++write_ptr;
   //write data
   for (char c : name) {
-    if (write_ptr < reinterpret_cast<char*>(end_ptr))
+    if (write_ptr < reinterpret_cast<char*>(row_end_))
     {
     *write_ptr = c;
     ++write_ptr;
     }
   }
   //update pointer
-  *append_index = static_cast<unsigned short>(write_ptr - reinterpret_cast<char*>(start_ptr));
+  *append_index = static_cast<unsigned short>(write_ptr - reinterpret_cast<char*>(row_begin_));
 
   //update number of total col
   ++*num_of_col;
@@ -197,28 +175,28 @@ sdb::DataRow::DataRow(void* start, void* end) :
   int i = 0;
   if (getFlagBit(SQLType::DATETIME)) {
     datetime_begin_ptr = reinterpret_cast<char*>(flag_ptr + getHeaderSize() - 1);
-    datetime_end_ptr = reinterpret_cast<char*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+    datetime_end_ptr = reinterpret_cast<char*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
     ++i;
   }
   if (getFlagBit(SQLType::INTEGER)) {
     if (i == 0) {
       int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
     }
     else {
-      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i+1]);
+      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i+1]);
     }
     ++i;
   }
   if (getFlagBit(SQLType::BOOLEAN)) {
     if (i == 0) {
       int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
     }
     else {
-      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i]);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(start_ptr) + *offset_arr[i + 1]);
+      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
+      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i + 1]);
     }
     ++i;
   }
@@ -233,33 +211,36 @@ sdb::DataRow::~DataRow() {
 }
 
 int sdb::DataRow::getInteger(int i) {
-  char* trav_it = reinterpret_cast<char*>(start_ptr);
-  if (getFlagBit(SQLType::INTEGER)) {
-    if (getFlagBit(SQLType::DATETIME) {
-      
-    }
-    else {
-
-    }
+  if (getFlagBit(SQLType::INTEGER) && int_begin_ptr + i < int_end_ptr) {
+    return *(int_begin_ptr + i);
   }
   throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
 bool sdb::DataRow::getBoolean(int i) {
-  if (getFlagBit(SQLType::INTEGER)) {
-
+  if (getFlagBit(SQLType::BOOLEAN) && bool_begin_ptr + i < bool_end_ptr) {
+    return *(bool_begin_ptr + i);
   }
   throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
 std::string sdb::DataRow::getVarChar(int i) {
-  if (getFlagBit(SQLType::INTEGER)) {
-
+  if (getFlagBit(SQLType::VARCHAR)) {
+    int* trav = static_cast<int*>(std::max({static_cast<void*>(datetime_end_ptr),
+                static_cast<void*>(int_end_ptr), static_cast<void*>(bool_end_ptr)}));
+    for (int j = 0; j < i; ++j) {
+      if(*trav == 0)   throw std::runtime_error("Type mismatch or out-of-range getting data.");
+      trav = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *trav);
+    }
+    char* start_of_result_string = reinterpret_cast<char*>(trav) + sizeof(int);
+    trav = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *trav);
+    char* end_of_result_string = reinterpret_cast<char*>(trav);
+    return std::string(start_of_result_string, end_of_result_string - start_of_result_string);
   }
   throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
 
 void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
   const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string) {
-  unsigned char* write_pos_ptr{ static_cast<unsigned char*>(start_ptr) };
+  unsigned char* write_pos_ptr{ static_cast<unsigned char*>(row_begin_) };
   ++write_pos_ptr;
   unsigned int* pos_to_datetime{ nullptr };
   unsigned int* pos_to_integer{ nullptr };
@@ -289,17 +270,17 @@ void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vec
   if (all_datetime.size() > 0) {
     std::memcpy(write_pos_ptr, all_datetime.data(), all_datetime.size() * sizeof(char));
     write_pos_ptr += all_datetime.size() * sizeof(char);
-    *pos_to_datetime = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_datetime = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
   }
   if (all_integer.size() > 0) {
     std::memcpy(write_pos_ptr, all_integer.data(), all_integer.size() * sizeof(int));
     write_pos_ptr += all_integer.size() * sizeof(int);
-    *pos_to_integer = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_integer = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
   }
   if (all_bool.size() > 0) {
     std::memcpy(write_pos_ptr, all_bool.data(), all_bool.size() * sizeof(char));
     write_pos_ptr += all_bool.size() * sizeof(char);
-    *pos_to_boolean = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(start_ptr));
+    *pos_to_boolean = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
   }
   /* Copy the contents of serialized string
   */

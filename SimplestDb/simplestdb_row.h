@@ -3,59 +3,57 @@
 
 #include<string>
 
-/*
-** These objects 
-**
-**
-*/
+// These objects interpret data blocks on Slottedpage objects using pointers.
+// All data reside on an array of unsigned chars(see Slottedpage class).
+// These can act both like records in tables or on-disk-pointers used in 
+// .sdb files or metadata for the database.
 
 namespace sdb {
 
-//base class to be derived
+using bool8_t = char;  /* Booleans are 1 byte to avoid vector<bool> specialization. */
+
+// Base class to be derived.
 class Row {
-public:
-  ~Row();
-  //returns the size in bytes of the row
+ public:
+  // Number of bytes of the row.
   size_t physicalSize();
-protected:
-  //class is abstract effectively 
-  Row(void*, void*);
-  //start of the data range
-  unsigned char* start_ptr;
-  //one past the end of the data range
-  unsigned char* end_ptr;
+ protected:
+  // Only used by derived classes. Requires [begin, end)
+  Row(std::byte* begin, std::byte* end);
+  std::byte* row_begin_;
+  std::byte* row_end_;
 };
 
-//this object implements the db object to be instantiated on the first page of the .sdb file
-//holds names of tables, page id pairs
-
+// Contains the table name and an on-disk pointer(page id) to 
+// the table.
 class DBRow : public Row {
-public:
-  DBRow(void*, void*);
-  ~DBRow();
+ public:
+  DBRow(std::byte* begin, std::byte* end);
   std::string getTableName();
-  void setTableName(std::string name);
-  unsigned int getPageId();
-  void setPageId(unsigned int slot_id = 0);
-private:
-  unsigned int* slot_id;
-  unsigned char* name_end_ptr;
+  uint32_t getPageId();
+  void setTableName(const std::string& name);
+  void setPageId(uint32_t page_id);
+ private:
+  uint32_t* page_id_;
+  std::byte* tablename_end_;
 };
 
 //this object contains the table header information for the table
 //contains column name, type information
 //together with TablePointerRow makes up table pages
 
+// Contains the header/column name and type information for the table. 
+// 0-indexed 
 class TableHeaderRow : public Row {
-public:
-  TableHeaderRow(void*, void*);
+ public:
+  TableHeaderRow(std::byte*, std::byte*);
   ~TableHeaderRow();
   unsigned short getNumOfCol();
   std::string getColumnName(int i);
   SQLType getColumnType(int i);
   void appendCol(std::string name, SQLType type);
-private:
-  unsigned short* num_of_col;
+ private:
+  uint16_t* num_of_col;
   unsigned short* start_of_pointers;
 };
 
@@ -79,19 +77,18 @@ private:
 //this object contains the data of the table itself
 class DataRow : public Row {
 public:
-  using bool8_t = char;  /* Booleans are 1 byte */
+
   DataRow(void*, void*);
   ~DataRow();
   //std::string getDateTime(int i); TODO: use std chronos
-
-  /* Gets the column at index i in formatted row.
+  /* Gets the i-th integer, boolean, or string.
+  ** Index i is independent for each type. Eg. 0-th int != 0-th bool
   ** Throws exception if the data at i is not correct type.
   ** Throws exception if i is out of range.
   */
   int getInteger(int i);
   bool getBoolean(int i);
   std::string getVarChar(int i);
-
   /* Quickly loads data into a block on a Page.
   ** Writes the vectors of data into the block using pointers and memcpy.
   ** Booleans are 1 byte chars to avoid using std::vector<bool> specialization. See type alias in
@@ -109,6 +106,7 @@ private:
   bool8_t* bool_begin_ptr{ nullptr };
   bool8_t* bool_end_ptr{ nullptr };
 
+
   int getHeaderSize();
 
   void helpSetBit(int i, bool set);
@@ -119,4 +117,4 @@ private:
 
 };
 
-}//sdb namespace
+}  // namespace sdb

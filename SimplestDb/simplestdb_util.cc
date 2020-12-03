@@ -13,6 +13,7 @@ std::string sdb::serializeStringVec(const std::vector<std::string>& string_arr) 
     write_pos_iter -= sizeof(int);
     memcpy(&*write_pos_iter, &curr_string_size, sizeof(int));
   }
+  serialized_string.append({ 0,0,0,0 }); /* NULL terminated. TODO: do I need to be careful here? how does c++ treat null terminated string? */
   return serialized_string;
 }
 

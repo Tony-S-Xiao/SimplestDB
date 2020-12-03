@@ -27,7 +27,7 @@ public:
 		//used to write the block of data into the disk
 		void* getPageStart();
 		//gets the block by slot id
-		std::pair<void*, void*> getBlock(int slot_id);
+		std::pair<void*, void*> getBlock(int page_id);
 		//gets the size in bytes of the total space used on the page
 		size_t physicalSize();
 		//gets the size in bytes of free space on the page
