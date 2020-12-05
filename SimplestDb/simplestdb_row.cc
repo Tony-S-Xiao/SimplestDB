@@ -2,6 +2,7 @@
 #include"simplestdb_util.h"
 
 #include<queue>
+#include<stack>
 #include<stdexcept>
 #include<cstring>
 #include<vector>
@@ -12,15 +13,15 @@ sdb::Row::Row(std::byte* begin, std::byte* end) :
 size_t sdb::Row::physicalSize() {
   return row_end_ - row_begin_;
 }
-
+/*****/
 sdb::DBRow::DBRow(std::byte* begin, std::byte* end) : Row(begin, end) {
-  page_id_ = reinterpret_cast<uint32_t*>(end) - 1;
+  page_id_ = reinterpret_cast<OnDiskPointer*>(end) - 1;
   tablename_end_ = reinterpret_cast<std::byte*>(page_id_);
 }
 std::string sdb::DBRow::getTableName() {
   return std::string(reinterpret_cast<char*>(row_begin_), tablename_end_ - row_begin_);
 }
-uint32_t sdb::DBRow::getPageId() {
+sdb::OnDiskPointer sdb::DBRow::getPageId() {
   return *page_id_;
 }
 void sdb::DBRow::setTableName(const std::string& name) {
@@ -29,113 +30,141 @@ void sdb::DBRow::setTableName(const std::string& name) {
 void sdb::DBRow::setPageId(uint32_t page_id) {
   *page_id_ = page_id;
 }
-
+size_t sdb::DBRow::calcSizeRequired(const std::string& name) {
+  return name.size() + sizeof(unsigned int);
+}
+/*****/
 sdb::TableHeaderRow::TableHeaderRow(std::byte* begin, std::byte* end) :
   Row(begin, end),
-  num_of_col(static_cast<unsigned short*>(begin),
-  start_of_pointers(num_of_col +1) {
-}
-sdb::TableHeaderRow::~TableHeaderRow() {
-
+  num_of_col_(reinterpret_cast<uint16_t*>(begin)),
+  start_of_pointers_(num_of_col_ +1) {
 }
 unsigned short sdb::TableHeaderRow::getNumOfCol() {
-  return *num_of_col;
+  return *num_of_col_;
 }
 std::string sdb::TableHeaderRow::getColumnName(int i) {
-  unsigned short* trav = start_of_pointers + i; 
-  char* string_start = reinterpret_cast<char*>(num_of_col) + *trav + 1;
-  ++trav;
-  char* string_end = reinterpret_cast<char*>(num_of_col) + *trav;
-  return std::string(string_start, string_end);
+  unsigned short* trav = reinterpret_cast<unsigned short*>(start_of_pointers_) + i;
+  char* string_start{ nullptr };
+  char* string_end = reinterpret_cast<char*>(trav) + *trav;
+  if (i == 0)
+    string_start = reinterpret_cast<char*>(row_begin_) + sizeof(uint16_t) + sizeof(uint16_t) * getNumOfCol();
+  else {
+    --trav;
+    string_start = reinterpret_cast<char*>(trav) + *trav;
+  }
+  return std::string(string_start, string_end - string_start);
 }
 sdb::SQLType sdb::TableHeaderRow::getColumnType(int i) {
-  unsigned short* trav = start_of_pointers + i;
-  char* type_start = reinterpret_cast<char*>(num_of_col) + *trav;
+  unsigned short* trav = reinterpret_cast<unsigned short*>(start_of_pointers_) + i;
+  char* type_start = reinterpret_cast<char*>(num_of_col_) + *trav;
   switch (*type_start) {
-  case static_cast<int>(SQLType::NUL):
+  case static_cast<unsigned char>(SQLType::NUL):
     return SQLType::NUL;
-  case static_cast<int>(SQLType::VARCHAR):
+  case static_cast<unsigned char>(SQLType::VARCHAR):
     return SQLType::VARCHAR;
-  case static_cast<int>(SQLType::INTEGER):
+  case static_cast<unsigned char>(SQLType::INTEGER):
     return SQLType::INTEGER;
-  case static_cast<int>(SQLType::DATETIME):
+  case static_cast<unsigned char>(SQLType::DATETIME):
     return SQLType::DATETIME;
-  case static_cast<int>(SQLType::BOOLEAN):
+  case static_cast<unsigned char>(SQLType::BOOLEAN):
     return SQLType::BOOLEAN;
   }
   return SQLType::NUL;
 }
-void sdb::TableHeaderRow::appendCol(std::string name, SQLType type) {
-  char* data_shift_ptr_start = reinterpret_cast<char*>(num_of_col) + 2 + *num_of_col * 2;
-  char* data_shift_ptr_end = reinterpret_cast<char*>(num_of_col) + 2 + *num_of_col * 2 - 2;
-  std::queue<char> shift_two;
-
-  //shift data over using buffer
-  //buffer allows for 1 pass solution
-  while (data_shift_ptr_start != reinterpret_cast<char*>(row_end_)) {
-    if (shift_two.size() < 2) {
-      shift_two.push(*data_shift_ptr_start);
+//void sdb::TableHeaderRow::appendCol(std::string name, SQLType type) {
+//  char* data_shift_ptr_start = reinterpret_cast<char*>(num_of_col) + 2 + *num_of_col * 2;
+//  char* data_shift_ptr_end = reinterpret_cast<char*>(num_of_col) + 2 + *num_of_col * 2 - 2;
+//  std::queue<char> shift_two;
+//
+//  //shift data over using buffer
+//  //buffer allows for 1 pass solution
+//  while (data_shift_ptr_start != reinterpret_cast<char*>(row_end_)) {
+//    if (shift_two.size() < 2) {
+//      shift_two.push(*data_shift_ptr_start);
+//    }
+//    else {
+//      shift_two.push(*data_shift_ptr_start);
+//      *data_shift_ptr_end = shift_two.front();
+//      shift_two.pop();
+//    }
+//    ++data_shift_ptr_start;
+//    ++data_shift_ptr_end;
+//  }
+//  while (shift_two.size() > 0) {
+//    *data_shift_ptr_end = shift_two.front();
+//    shift_two.pop();
+//  }
+//
+//  //update pointers after shift by 2
+//  unsigned short* to_inc = start_of_pointers;
+//  for (int i = 0; i < *num_of_col; ++i) {
+//    *to_inc += 2;
+//    ++to_inc;
+//  }
+//
+//  //append data type
+//  switch (type) {
+//  case SQLType::NUL:
+//    name.push_back(0);
+//    break;
+//  case SQLType::VARCHAR:
+//    name.push_back(1);
+//    break;
+//  case SQLType::INTEGER:
+//    name.push_back(2);
+//    break;
+//  case SQLType::DATETIME:
+//    name.push_back(3);
+//    break;
+//  case SQLType::BOOLEAN:
+//    name.push_back(4);
+//    break;
+//  }
+//
+//  //initialize write pointer
+//  unsigned short* append_index = start_of_pointers + *num_of_col;
+//  char* write_ptr = reinterpret_cast<char*>(num_of_col) + *(append_index - 1) + 1;
+//  ++write_ptr;
+//  //write data
+//  for (char c : name) {
+//    if (write_ptr < reinterpret_cast<char*>(row_end_))
+//    {
+//    *write_ptr = c;
+//    ++write_ptr;
+//    }
+//  }
+//  //update pointer
+//  *append_index = static_cast<unsigned short>(write_ptr - reinterpret_cast<char*>(row_begin_));
+//
+//  //update number of total col
+//  ++*num_of_col;
+//
+//  return;
+//}
+void sdb::TableHeaderRow::loadData(const std::vector<std::string>& all_column_names,
+  const std::vector<sdb::SQLType>& all_types) {
+  uint16_t* write_ptr_16{ reinterpret_cast<uint16_t*>(row_begin_) };
+  unsigned char* write_ptr_8{ reinterpret_cast<uint8_t*>(row_begin_) };
+  std::vector<std::byte> byte_buffer;
+  std::vector<OnRowPointer> pointer_buffer;
+  for (int i = 0; i < all_column_names.size(); ++i) {
+    /* Flatten column names and append with their type*/
+    for (char curr_char : all_column_names[i]) {
+      byte_buffer.push_back(static_cast<std::byte>(curr_char));
     }
-    else {
-      shift_two.push(*data_shift_ptr_start);
-      *data_shift_ptr_end = shift_two.front();
-      shift_two.pop();
-    }
-    ++data_shift_ptr_start;
-    ++data_shift_ptr_end;
-  }
-  while (shift_two.size() > 0) {
-    *data_shift_ptr_end = shift_two.front();
-    shift_two.pop();
-  }
-
-  //update pointers after shift by 2
-  unsigned short* to_inc = start_of_pointers;
-  for (int i = 0; i < *num_of_col; ++i) {
-    *to_inc += 2;
-    ++to_inc;
-  }
-
-  //append data type
-  switch (type) {
-  case SQLType::NUL:
-    name.push_back(0);
-    break;
-  case SQLType::VARCHAR:
-    name.push_back(1);
-    break;
-  case SQLType::INTEGER:
-    name.push_back(2);
-    break;
-  case SQLType::DATETIME:
-    name.push_back(3);
-    break;
-  case SQLType::BOOLEAN:
-    name.push_back(4);
-    break;
-  }
-
-  //initialize write pointer
-  unsigned short* append_index = start_of_pointers + *num_of_col;
-  char* write_ptr = reinterpret_cast<char*>(num_of_col) + *(append_index - 1) + 1;
-  ++write_ptr;
-  //write data
-  for (char c : name) {
-    if (write_ptr < reinterpret_cast<char*>(row_end_))
-    {
-    *write_ptr = c;
-    ++write_ptr;
+    for (int j = 0; j < sizeof(uint16_t); ++j) {
+      byte_buffer.push_back(static_cast<std::byte>(0));
     }
   }
-  //update pointer
-  *append_index = static_cast<unsigned short>(write_ptr - reinterpret_cast<char*>(row_begin_));
-
-  //update number of total col
-  ++*num_of_col;
-
-  return;
 }
-
+size_t sdb::TableHeaderRow::calcSizeRequired(const std::vector<std::string>& all_column_names,
+  const std::vector<SQLType>& all_types) {
+  size_t size_in_bytes{ sizeof(uint16_t) + sizeof(uint16_t) * all_column_names.size() };
+  for (int i = 0; i < all_column_names.size(); ++i) {
+    size_in_bytes += all_column_names[i].size() + sizeof(unsigned char);
+  }
+  return size_in_bytes;
+}
 sdb::TablePointerRow::TablePointerRow(void* start, void* end) : Row(start, end) {
   page_id = static_cast<unsigned int*>(start);
   space_available_on_page = reinterpret_cast<unsigned short*>(page_id + 1);

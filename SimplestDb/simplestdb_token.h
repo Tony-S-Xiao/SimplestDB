@@ -4,8 +4,23 @@
 
 namespace sdb {
 
-enum class SQLType { NUL = 0, VARCHAR = 1, INTEGER = 2, DATETIME = 4, BOOLEAN = 8 };
-enum class TokenType { NUL = 0, READ = 1, WRITE = 2, NEW = 4, OPEN = 8, CD = 16, HELP = 32, CREATE = 64 };
+enum class SQLType : unsigned char { 
+  NUL = 0,
+  VARCHAR = 1 << 0,
+  INTEGER = 1 << 1,
+  DATETIME = 1 << 2,
+  BOOLEAN = 1 << 3
+};
+enum class TokenType : unsigned char { 
+  NUL = 0,
+  READ = 1 << 0,
+  WRITE = 1 << 1,
+  NEW = 1 << 2,
+  OPEN = 1 << 3,
+  CD = 1 << 4,
+  HELP = 1 << 5,
+  CREATE = 1 << 6
+};
 
 class Token {
  public:

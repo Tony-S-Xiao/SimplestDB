@@ -9,14 +9,20 @@
 // .sdb files or metadata for the database.
 
 namespace sdb {
-
-using bool8_t = char;  /* Booleans are 1 byte to avoid vector<bool> specialization. */
+// Booleans are 1 byte to avoid vector<bool> specialization.
+using bool8_t = char;
+// Pointers in the rows are unsigned shorts(in number of bytes) offset from where the pointer starts.
+// Rows cannot span more than 1 page. So max pointer value only needs to be 2^16. Same as page size.
+using OnRowPointer = uint16_t;
+// On disk pointers(page id) are the index of page in .sdb file 0th indexed.
+using OnDiskPointer = uint32_t;
 
 // Base class to be derived.
 class Row {
  public:
   // Number of bytes of the row.
   size_t physicalSize();
+
  protected:
   // Only used by derived classes. Requires [begin, end)
   Row(std::byte* begin, std::byte* end);
@@ -30,31 +36,31 @@ class DBRow : public Row {
  public:
   DBRow(std::byte* begin, std::byte* end);
   std::string getTableName();
-  uint32_t getPageId();
+  OnDiskPointer getPageId();
   void setTableName(const std::string& name);
   void setPageId(uint32_t page_id);
+  static size_t calcSizeRequired(const std::string& name);
  private:
-  uint32_t* page_id_;
+  OnDiskPointer* page_id_;
   std::byte* tablename_end_;
 };
 
-//this object contains the table header information for the table
-//contains column name, type information
-//together with TablePointerRow makes up table pages
-
 // Contains the header/column name and type information for the table. 
-// 0-indexed 
+// Acts as an array of column name, column type pairs.
 class TableHeaderRow : public Row {
  public:
   TableHeaderRow(std::byte*, std::byte*);
-  ~TableHeaderRow();
   unsigned short getNumOfCol();
   std::string getColumnName(int i);
   SQLType getColumnType(int i);
-  void appendCol(std::string name, SQLType type);
+  void loadData(const std::vector<std::string>& all_column_names,
+    const std::vector<SQLType>& all_types);
+  static size_t calcSizeRequired(const std::vector<std::string>& all_column_names,
+    const std::vector<SQLType>& all_types);
+  //void appendCol(std::string name, SQLType type);
  private:
-  uint16_t* num_of_col;
-  unsigned short* start_of_pointers;
+  uint16_t* num_of_col_;
+  uint16_t* start_of_pointers_;
 };
 
 //this object contains the space available on the page
