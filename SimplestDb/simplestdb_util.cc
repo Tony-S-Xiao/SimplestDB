@@ -3,17 +3,18 @@
 std::string sdb::serializeStringVec(const std::vector<std::string>& string_arr) {
   std::string serialized_string{ "" };
   for (int i = 0; i < string_arr.size(); ++i) {
-    int curr_string_size = string_arr[i].size();
-    /* Push 4 placeholder characters( bytes ) */
-    for (int j = 0; j < sizeof(int); ++j) {
+    unsigned short curr_string_size = string_arr[i].size() + sizeof(unsigned short);
+    /* Push 2 placeholder characters( bytes ) */
+    for (int j = 0; j < sizeof(unsigned short); ++j) {
       serialized_string.push_back(' ');
     }
-    /* Copy the integer into the string */
+    /* Copy the pointer into the string */
     typename std::string::iterator write_pos_iter = serialized_string.end();
-    write_pos_iter -= sizeof(int);
-    memcpy(&*write_pos_iter, &curr_string_size, sizeof(int));
+    write_pos_iter -= sizeof(unsigned short);
+    memcpy(&*write_pos_iter, &curr_string_size, sizeof(unsigned short));
+    serialized_string.append(string_arr[i]);
   }
-  serialized_string.append({ 0,0,0,0 }); /* NULL terminated. TODO: do I need to be careful here? how does c++ treat null terminated string? */
+  serialized_string.append({ 0,0 }); /* NULL terminated. TODO: do I need to be careful here? how does c++ treat null terminated string? */
   return serialized_string;
 }
 

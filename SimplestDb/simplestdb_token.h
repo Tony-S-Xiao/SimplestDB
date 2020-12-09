@@ -7,9 +7,9 @@ namespace sdb {
 enum class SQLType : unsigned char { 
   NUL = 0,
   VARCHAR = 1 << 0,
-  INTEGER = 1 << 1,
-  DATETIME = 1 << 2,
-  BOOLEAN = 1 << 3
+  BOOLEAN = 1 << 1,
+  INTEGER = 1 << 2,
+  DATETIME = 1 << 3
 };
 enum class TokenType : unsigned char { 
   NUL = 0,

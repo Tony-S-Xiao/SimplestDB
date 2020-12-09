@@ -6,6 +6,7 @@
 #include<stdexcept>
 #include<cstring>
 #include<vector>
+#include<math.h>
 
 sdb::Row::Row(std::byte* begin, std::byte* end) :
   row_begin_(begin), row_end_(end) {
@@ -25,7 +26,7 @@ sdb::OnDiskPointer sdb::DBRow::getPageId() {
   return *page_id_;
 }
 void sdb::DBRow::setTableName(const std::string& name) {
-  memcpy(reinterpret_cast<char*>(row_begin_), name.data(), name.size());
+  memcpy(reinterpret_cast<char*>(row_begin_), name.data(), std::min(name.size(), row_end_ - row_begin_ - sizeof(uint32_t)));
 }
 void sdb::DBRow::setPageId(uint32_t page_id) {
   *page_id_ = page_id;
@@ -147,15 +148,21 @@ void sdb::TableHeaderRow::loadData(const std::vector<std::string>& all_column_na
   unsigned char* write_ptr_8{ reinterpret_cast<uint8_t*>(row_begin_) };
   std::vector<std::byte> byte_buffer;
   std::vector<OnRowPointer> pointer_buffer;
+  /* Flatten column names and append with their type */
   for (int i = 0; i < all_column_names.size(); ++i) {
-    /* Flatten column names and append with their type*/
     for (char curr_char : all_column_names[i]) {
       byte_buffer.push_back(static_cast<std::byte>(curr_char));
     }
-    for (int j = 0; j < sizeof(uint16_t); ++j) {
-      byte_buffer.push_back(static_cast<std::byte>(0));
-    }
+    byte_buffer.push_back(static_cast<std::byte>(all_types[i]));
+    pointer_buffer.push_back(static_cast<OnRowPointer>(byte_buffer.size()));
   }
+  /* Pointers needs additional offset */
+  for (int i = 0; i < pointer_buffer.size(); ++i) {
+    pointer_buffer[i] += pointer_buffer.size() - 1 - i;
+  }
+  *num_of_col_ = static_cast<uint16_t>(all_column_names.size());
+  memcpy(start_of_pointers_, &pointer_buffer, pointer_buffer.size() * sizeof(OnRowPointer));
+  memcpy(start_of_pointers_ + pointer_buffer.size(), &byte_buffer, byte_buffer.size());
 }
 size_t sdb::TableHeaderRow::calcSizeRequired(const std::vector<std::string>& all_column_names,
   const std::vector<SQLType>& all_types) {
@@ -165,78 +172,73 @@ size_t sdb::TableHeaderRow::calcSizeRequired(const std::vector<std::string>& all
   }
   return size_in_bytes;
 }
-sdb::TablePointerRow::TablePointerRow(void* start, void* end) : Row(start, end) {
-  page_id = static_cast<unsigned int*>(start);
-  space_available_on_page = reinterpret_cast<unsigned short*>(page_id + 1);
-}
-sdb::TablePointerRow::~TablePointerRow() {
-
+/*****/
+sdb::TablePointerRow::TablePointerRow(std::byte* begin, std::byte* end) : Row(begin, end) {
+  page_id_ = reinterpret_cast<unsigned int*>(begin);
+  space_available_on_page_ = reinterpret_cast<unsigned short*>(page_id_ + 1);
 }
 void sdb::TablePointerRow::setPageId(unsigned int index) {
-  *page_id = index;
+  *page_id_ = index;
 }
 void sdb::TablePointerRow::setSpaceAvailable(unsigned short space) {
-  *space_available_on_page = space;
+  *space_available_on_page_ = space;
 }
 unsigned int sdb::TablePointerRow::getPageId() {
-  return *page_id;
+  return *page_id_;
 }
 unsigned short sdb::TablePointerRow::getSpaceAvailable() {
-  return *space_available_on_page;
+  return *space_available_on_page_;
+}
+/*****/
+sdb::DataRow::DataRow(std::byte* begin, std::byte* end) :
+  Row(begin, end),
+  flag_ptr(reinterpret_cast<unsigned char*>(begin)) {
+  init();
 }
 
-sdb::DataRow::DataRow(void* start, void* end) : 
-  Row(start, end), flag_ptr(static_cast<unsigned char*>(start)) {
-  unsigned short* offset{ reinterpret_cast<unsigned short*>(flag_ptr + 1) };
-  std::vector<unsigned short*> offset_arr;
+void sdb::DataRow::init() {
+  std::queue<std::byte*> start_address;
+  std::queue<std::byte*> end_address;
+  std::queue<SQLType> to_update;
+  start_address.push(row_begin_ + getHeaderSize());
   if (getFlagBit(SQLType::DATETIME)) {
-    offset_arr.push_back(offset);
-    ++offset;
+    to_update.push(SQLType::DATETIME);
   }
   if (getFlagBit(SQLType::INTEGER)) {
-    offset_arr.push_back(offset);
-    ++offset;
+    to_update.push(SQLType::INTEGER);
   }
   if (getFlagBit(SQLType::BOOLEAN)) {
-    offset_arr.push_back(offset);
-    ++offset;
+    to_update.push(SQLType::BOOLEAN);
   }
-  int i = 0;
-  if (getFlagBit(SQLType::DATETIME)) {
-    datetime_begin_ptr = reinterpret_cast<char*>(flag_ptr + getHeaderSize() - 1);
-    datetime_end_ptr = reinterpret_cast<char*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
-    ++i;
+  uint16_t* offsets{ reinterpret_cast<uint16_t*>(flag_ptr + 1) };
+  std::byte* trav = reinterpret_cast<std::byte*>(flag_ptr + 1);
+  for (int i = 0; i < to_update.size(); ++i) {
+    start_address.push(trav + *offsets);
+    end_address.push(trav + *offsets);
+    trav += sizeof(uint16_t);
+    ++offsets;
   }
-  if (getFlagBit(SQLType::INTEGER)) {
-    if (i == 0) {
-      int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
+  while (to_update.size() > 0) {
+    switch (to_update.front()) {
+    case SQLType::DATETIME:
+      datetime_begin_ptr = reinterpret_cast<char*>(start_address.front());
+      datetime_end_ptr = reinterpret_cast<char*>(end_address.front());
+      break;
+    case SQLType::INTEGER:
+      int_begin_ptr = reinterpret_cast<int32_t*>(start_address.front());
+      int_end_ptr = reinterpret_cast<int32_t*>(end_address.front());
+      break;
+    case SQLType::BOOLEAN:
+      bool_begin_ptr = reinterpret_cast<bool8_t*>(start_address.front());
+      bool_end_ptr = reinterpret_cast<bool8_t*>(end_address.front());
+      break;
     }
-    else {
-      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i+1]);
-    }
-    ++i;
+    to_update.pop();
+    start_address.pop();
+    end_address.pop();
   }
-  if (getFlagBit(SQLType::BOOLEAN)) {
-    if (i == 0) {
-      int_begin_ptr = reinterpret_cast<int*>(flag_ptr + getHeaderSize() - 1);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
-    }
-    else {
-      int_begin_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i]);
-      int_end_ptr = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *offset_arr[i + 1]);
-    }
-    ++i;
-  }
-  if (getFlagBit(SQLType::VARCHAR)) {
-    ++offset;
-    offset_arr.push_back(offset);
-  }
-}
-
-sdb::DataRow::~DataRow() {
-
+  if (getFlagBit(SQLType::VARCHAR))
+    varchar_begin_ptr = reinterpret_cast<uint16_t*>(start_address.front());
 }
 
 int sdb::DataRow::getInteger(int i) {
@@ -253,45 +255,44 @@ bool sdb::DataRow::getBoolean(int i) {
 }
 std::string sdb::DataRow::getVarChar(int i) {
   if (getFlagBit(SQLType::VARCHAR)) {
-    int* trav = static_cast<int*>(std::max({static_cast<void*>(datetime_end_ptr),
+    char* trav = static_cast<char*>(std::max({static_cast<void*>(datetime_end_ptr),
                 static_cast<void*>(int_end_ptr), static_cast<void*>(bool_end_ptr)}));
     for (int j = 0; j < i; ++j) {
       if(*trav == 0)   throw std::runtime_error("Type mismatch or out-of-range getting data.");
-      trav = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *trav);
+      trav += *reinterpret_cast<unsigned short*>(trav);
     }
-    char* start_of_result_string = reinterpret_cast<char*>(trav) + sizeof(int);
-    trav = reinterpret_cast<int*>(reinterpret_cast<char*>(row_begin_) + *trav);
+    char* start_of_result_string = reinterpret_cast<char*>(trav) + sizeof(unsigned short);
+    trav += *reinterpret_cast<unsigned short*>(trav);
     char* end_of_result_string = reinterpret_cast<char*>(trav);
     return std::string(start_of_result_string, end_of_result_string - start_of_result_string);
   }
   throw std::runtime_error("Type mismatch or out-of-range getting data.");
 }
-
 void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
   const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string) {
-  unsigned char* write_pos_ptr{ static_cast<unsigned char*>(row_begin_) };
+  unsigned char* write_pos_ptr{ reinterpret_cast<unsigned char*>(row_begin_) };
   ++write_pos_ptr;
-  unsigned int* pos_to_datetime{ nullptr };
-  unsigned int* pos_to_integer{ nullptr };
-  unsigned int* pos_to_boolean{ nullptr };
-  unsigned int* pos_to_varchar{ nullptr };
+  unsigned short* pos_to_datetime{ nullptr };
+  unsigned short* pos_to_integer{ nullptr };
+  unsigned short* pos_to_boolean{ nullptr };
+  unsigned short* pos_to_varchar{ nullptr };
   /*
   ** populate block from the left
   */
   if (all_datetime.size() > 0) {
     setFlagBit(SQLType::DATETIME);
-    pos_to_datetime = reinterpret_cast<unsigned int*>(write_pos_ptr);
-    write_pos_ptr += sizeof(int);
+    pos_to_datetime = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += sizeof(unsigned short);
   }
   if (all_integer.size() > 0) {
     setFlagBit(SQLType::INTEGER);
-    pos_to_integer = reinterpret_cast<unsigned int*>(write_pos_ptr);
-    write_pos_ptr += sizeof(int);
+    pos_to_integer = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += sizeof(unsigned short);
   }
   if (all_bool.size() > 0) {
     setFlagBit(SQLType::BOOLEAN);
-    pos_to_boolean = reinterpret_cast<unsigned int*>(write_pos_ptr);
-    write_pos_ptr += sizeof(int);
+    pos_to_boolean = reinterpret_cast<unsigned short*>(write_pos_ptr);
+    write_pos_ptr += sizeof(unsigned short);
   }
   /*
   ** copy data and increment write pointer and set the pos
@@ -299,17 +300,17 @@ void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vec
   if (all_datetime.size() > 0) {
     std::memcpy(write_pos_ptr, all_datetime.data(), all_datetime.size() * sizeof(char));
     write_pos_ptr += all_datetime.size() * sizeof(char);
-    *pos_to_datetime = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
+    *pos_to_datetime = static_cast<unsigned int>(write_pos_ptr - reinterpret_cast<unsigned char*>(pos_to_datetime));
   }
   if (all_integer.size() > 0) {
     std::memcpy(write_pos_ptr, all_integer.data(), all_integer.size() * sizeof(int));
     write_pos_ptr += all_integer.size() * sizeof(int);
-    *pos_to_integer = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
+    *pos_to_integer = static_cast<unsigned int>(write_pos_ptr - reinterpret_cast<unsigned char*>(pos_to_integer));
   }
   if (all_bool.size() > 0) {
     std::memcpy(write_pos_ptr, all_bool.data(), all_bool.size() * sizeof(char));
     write_pos_ptr += all_bool.size() * sizeof(char);
-    *pos_to_boolean = static_cast<unsigned int>(write_pos_ptr - static_cast<unsigned char*>(row_begin_));
+    *pos_to_boolean = static_cast<unsigned int>(write_pos_ptr - reinterpret_cast<unsigned char*>(pos_to_boolean));
   }
   /* Copy the contents of serialized string
   */
@@ -318,14 +319,26 @@ void sdb::DataRow::loadData(const std::vector<bool8_t>& all_bool, const std::vec
     std::string serialized_string{ sdb::serializeStringVec(all_string) };
     std::memcpy(write_pos_ptr, serialized_string.data(), serialized_string.size() * sizeof(char));
   }
+  init();
 }
-
+size_t sdb::DataRow::calcSizeRequired(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
+  const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string) {
+  size_t string_serialized_size{ 0 };
+  for (const std::string& s : all_string) {
+    string_serialized_size += s.size() + sizeof(unsigned short);
+  }
+  string_serialized_size += 2; // Null unsigned short terminated.
+  return sizeof(*flag_ptr) +
+    (all_bool.size() > 0 ? sizeof(OnRowPointer) : 0) +
+    (all_integer.size() > 0 ? sizeof(OnRowPointer) : 0) +
+    (all_datetime.size() > 0 ? sizeof(OnRowPointer) : 0) +
+    all_bool.size() * sizeof(bool8_t) +
+    all_integer.size() * sizeof(int) +
+    all_datetime.size() * sizeof(char) +
+    string_serialized_size;
+}
 int sdb::DataRow::getHeaderSize() {
-  return 1 +
-    sizeof(int) * getFlagBit(SQLType::DATETIME) +
-    sizeof(int) * getFlagBit(SQLType::INTEGER) +
-    sizeof(int) * getFlagBit(SQLType::BOOLEAN) +
-    sizeof(int) * getFlagBit(SQLType::VARCHAR);
+  return 1 + sizeof(OnRowPointer) * (getFlagBit(SQLType::DATETIME) + getFlagBit(SQLType::INTEGER) + getFlagBit(SQLType::BOOLEAN));
 }
 
 void sdb::DataRow::helpSetBit(int i, bool set) {
@@ -347,49 +360,56 @@ bool sdb::DataRow::helpGetBit(int i) {
 }
 
 void sdb::DataRow::setFlagBit(SQLType type) {
-  switch (type) {
-  case SQLType::DATETIME:
-    helpSetBit(3, true);
-    return;
-  case SQLType::INTEGER:
-    helpSetBit(2, true);
-    return;
-  case SQLType::BOOLEAN:
-    helpSetBit(1, true);
-    return;
-  case SQLType::VARCHAR:
-    helpSetBit(0, true);
-    return;
-  }
-  throw std::runtime_error("SQL type not implemented.");
+  *flag_ptr |= static_cast<unsigned char>(type);
+  //switch (type) {
+  //case SQLType::DATETIME:
+  //  helpSetBit(3, true);
+  //  return;
+  //case SQLType::INTEGER:
+  //  helpSetBit(2, true);
+  //  return;
+  //case SQLType::BOOLEAN:
+  //  helpSetBit(1, true);
+  //  return;
+  //case SQLType::VARCHAR:
+  //  helpSetBit(0, true);
+  //  return;
+  //}
+
 }
 void sdb::DataRow::unsetFlagBit(SQLType type) {
-  switch (type) {
-  case SQLType::DATETIME:
-    helpSetBit(3, false);
-    return;
-  case SQLType::INTEGER:
-    helpSetBit(2, false);
-    return;
-  case SQLType::BOOLEAN:
-    helpSetBit(1, false);
-    return;
-  case SQLType::VARCHAR:
-    helpSetBit(0, false);
-    return;
-  }
-  throw std::runtime_error("SQL type not implemented.");
+  *flag_ptr ^= static_cast<unsigned char>(type);
+  //switch (type) {
+  //case SQLType::DATETIME:
+  //  helpSetBit(3, false);
+  //  return;
+  //case SQLType::INTEGER:
+  //  helpSetBit(2, false);
+  //  return;
+  //case SQLType::BOOLEAN:
+  //  helpSetBit(1, false);
+  //  return;
+  //case SQLType::VARCHAR:
+  //  helpSetBit(0, false);
+  //  return;
+  //}
+
 }
 bool sdb::DataRow::getFlagBit(SQLType type) {
-  switch (type) {
-  case SQLType::DATETIME:
-    return helpGetBit(3);
-  case SQLType::INTEGER:
-    return helpGetBit(2);
-  case SQLType::BOOLEAN:
-    return helpGetBit(1);
-  case SQLType::VARCHAR:
-    return helpGetBit(0);
-  }
-  throw std::runtime_error("SQL type not implemented.");
+  return static_cast<unsigned char>(type) & *flag_ptr;
+  //switch (type) {
+  //case SQLType::DATETIME:
+  //  return helpGetBit(3);
+  //case SQLType::INTEGER:
+  //  return helpGetBit(2);
+  //case SQLType::BOOLEAN:
+  //  return helpGetBit(1);
+  //case SQLType::VARCHAR:
+  //  return helpGetBit(0);
+  //}
+
+}
+
+bool sdb::DataRow::flagIsNull() {
+  return *flag_ptr == 0;
 }

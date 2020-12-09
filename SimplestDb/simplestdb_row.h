@@ -22,7 +22,6 @@ class Row {
  public:
   // Number of bytes of the row.
   size_t physicalSize();
-
  protected:
   // Only used by derived classes. Requires [begin, end)
   Row(std::byte* begin, std::byte* end);
@@ -34,7 +33,7 @@ class Row {
 // the table.
 class DBRow : public Row {
  public:
-  DBRow(std::byte* begin, std::byte* end);
+  DBRow(std::byte*, std::byte*);
   std::string getTableName();
   OnDiskPointer getPageId();
   void setTableName(const std::string& name);
@@ -63,64 +62,59 @@ class TableHeaderRow : public Row {
   uint16_t* start_of_pointers_;
 };
 
-//this object contains the space available on the page
-//implements the table directory
-//contains page id, space available pairs
-//together with TableHeaderRows makes up table pages
+// Contains on-disk pointer(page id), space available pairs.
+// Used to help with faster insertions and finding all data that
+// belong to a given table.
 class TablePointerRow : public Row {
 public:
-  TablePointerRow(void*, void*);
-  ~TablePointerRow();
+  TablePointerRow(std::byte*, std::byte*);
   void setPageId(unsigned int index);
   void setSpaceAvailable(unsigned short space);
   unsigned int getPageId();
   unsigned short getSpaceAvailable();
 private:
-  unsigned short* space_available_on_page;
-  unsigned int* page_id;
+  uint16_t* space_available_on_page_;
+  OnDiskPointer* page_id_;
 };
 
-//this object contains the data of the table itself
+// Contains the data of the table itself(records).
 class DataRow : public Row {
 public:
-
-  DataRow(void*, void*);
-  ~DataRow();
-  //std::string getDateTime(int i); TODO: use std chronos
-  /* Gets the i-th integer, boolean, or string.
-  ** Index i is independent for each type. Eg. 0-th int != 0-th bool
-  ** Throws exception if the data at i is not correct type.
-  ** Throws exception if i is out of range.
-  */
+  DataRow(std::byte*, std::byte*);
+  // Gets the i-th integer, boolean, or string.
+  // Index i is independent for each type. Eg. 0-th int != 0-th bool
+  // Throws exception if the data at i is not correct type.
+  // Throws exception if i is out of range.
   int getInteger(int i);
   bool getBoolean(int i);
   std::string getVarChar(int i);
-  /* Quickly loads data into a block on a Page.
-  ** Writes the vectors of data into the block using pointers and memcpy.
-  ** Booleans are 1 byte chars to avoid using std::vector<bool> specialization. See type alias in
-  ** class declaration.
-  */
+  // Quickly loads data into a block on a Page.
+  // Writes the vectors of data into the block using pointers and memcpy.
+  // Booleans are 1 byte chars to avoid using std::vector<bool> specialization. See type alias in
+  // class declaration.
   void loadData(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
     const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string);
+  static size_t calcSizeRequired(const std::vector<bool8_t>& all_bool, const std::vector<int>& all_integer,
+    const std::vector<std::string>& all_datetime, const std::vector<std::string>& all_string);
 private:
-  //used to manipulate the first byte of the row(flag byte)
+  // Used to manipulate the first byte of the row(flag byte).
   unsigned char* flag_ptr{ nullptr };
-  char* datetime_begin_ptr{ nullptr };
-  char* datetime_end_ptr{ nullptr };
-  int* int_begin_ptr{ nullptr };
-  int* int_end_ptr{ nullptr };
-  bool8_t* bool_begin_ptr{ nullptr };
-  bool8_t* bool_end_ptr{ nullptr };
-
-
-  int getHeaderSize();
-
   void helpSetBit(int i, bool set);
   bool helpGetBit(int i);
   void setFlagBit(SQLType type);
   void unsetFlagBit(SQLType type);
   bool getFlagBit(SQLType type);
-
+  bool flagIsNull();
+  // Ranges of the data on the row. [begin, end).
+  char* datetime_begin_ptr{ nullptr };
+  char* datetime_end_ptr{ nullptr };
+  int32_t* int_begin_ptr{ nullptr };
+  int32_t* int_end_ptr{ nullptr };
+  bool8_t* bool_begin_ptr{ nullptr };
+  bool8_t* bool_end_ptr{ nullptr };
+  uint16_t* varchar_begin_ptr{ nullptr };
+  int getHeaderSize();
+  void init();
 };
 
 }  // namespace sdb
