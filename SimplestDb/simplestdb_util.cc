@@ -1,5 +1,8 @@
 #include"simplestdb_util.h"
 
+#include<string>
+#include<vector>
+
 std::string sdb::serializeStringVec(const std::vector<std::string>& string_arr) {
   std::string serialized_string{ "" };
   for (int i = 0; i < string_arr.size(); ++i) {

@@ -1,5 +1,8 @@
 #include"simplestdb_token.h"
 
+#include<string>
+#include<vector>
+
 sdb::Token::Token() {}
 sdb::Token::~Token() {}
 void sdb::Token::setTokenType(sdb::TokenType _type) {

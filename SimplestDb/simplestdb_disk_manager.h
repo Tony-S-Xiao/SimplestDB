@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SIMPLESTDB_DISK_MANAGER_H_
+#define SIMPLESTDB_DISK_MANAGER_H_
+
 #include<fstream>
 #include<string>
 #include<array>
@@ -48,5 +50,5 @@ private:
 	//capacity hard coded in the kDiskManagerCacheSize
 	LRUCache<int, sdb::SlottedPage*> *cache;
 };
-
-}
+}  // namespace sdb
+#endif // !SIMPLESTDB_DISK_MANAGER_H_

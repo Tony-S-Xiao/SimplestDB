@@ -1,7 +1,9 @@
-#include"simplestdb_page_footer.h"
 #include"simplestdb_page.h"
-#include"simplestdb_disk_manager.h"
-#include"simplestdb_row.h"
+//#include"simplestdb_disk_manager.h"
+#include"simplestdb_dbrow.h"
+#include"simplestdb_tableheaderrow.h"
+#include"simplestdb_tablepointerrow.h"
+#include"simplestdb_datarow.h"
 
 #include<iostream>
 #include<string>
@@ -86,4 +88,29 @@ void test() {
   for (int i = 0; i < all_string.size(); ++i) {
     assert(all_string[i] == datarow_test.getVarChar(i));
   }
+  sdb::DataRow datarow_test_existing(&*datarow_data.begin(), &*(datarow_data.end() - 1) + 1);
+  for (int i = 0; i < all_bool.size(); ++i) {
+    assert(all_bool[i] == datarow_test.getBoolean(i));
+  }
+  for (int i = 0; i < all_integer.size(); ++i) {
+    assert(all_integer[i] == datarow_test.getInteger(i));
+  }
+  for (int i = 0; i < all_string.size(); ++i) {
+    assert(all_string[i] == datarow_test.getVarChar(i));
+  }
+  // Page Test
+  std::array<std::byte, sdb::kPageSize>* data_for_page = new std::array<std::byte, sdb::kPageSize>{};
+  sdb::SlottedPage* test_page = new sdb::SlottedPage{ std::move(*data_for_page) };
+  auto test_block_1 = test_page->allocateBlock(11111);
+  auto test_block_2 = test_page->allocateBlock(1);
+  auto test_block_3 = test_page->allocateBlock(0);
+  assert(std::get<0>(test_block_1) == test_page->getPageStart());
+  assert(std::get<1>(test_block_1) == test_page->getPageStart() + 11112);
+  assert(std::get<2>(test_block_1) == 0);
+  assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11112);
+  assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11113);
+  assert(std::get<2>(test_block_2) == 1);
+  //assert(std::get<0>(test_block_3) == );
+  //assert(std::get<1>(test_block_3));
+  //assert(std::get<2>(test_block_3));
 }

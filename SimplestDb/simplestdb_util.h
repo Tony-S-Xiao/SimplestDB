@@ -1,7 +1,8 @@
-#pragma once
+#ifndef SIMPLESTDB_UTIL_H_
+#define SIMPLESTDB_UTIL_H_
+
 #include<string>
 #include<vector>
-#include<array>
 
 namespace sdb {
   /* The first 4 bytes of the output string is a 32-bit interger denoting size in
@@ -14,3 +15,4 @@ namespace sdb {
   */
   std::vector<std::string> deserializeFormattedString(const std::string& input_string);
 }
+#endif // !SIMPLESTDB_UTIL_H_

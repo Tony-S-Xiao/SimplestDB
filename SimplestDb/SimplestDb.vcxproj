@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,19 +19,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lru_cache.cc" />
     <ClCompile Include="simplestdb.cc" />
-    <ClCompile Include="simplestdb_disk_manager.cpp" />
+    <ClCompile Include="simplestdb_datarow.cc" />
     <ClCompile Include="simplestdb_page.cc" />
-    <ClCompile Include="simplestdb_page_footer.cpp" />
+    <ClCompile Include="simplestdb_page_footer.cc" />
     <ClCompile Include="simplestdb_row.cc" />
+    <ClCompile Include="simplestdb_tableheaderrow.cc" />
+    <ClCompile Include="simplestdb_tablepointerrow.cc" />
+    <ClCompile Include="simplestdb_token.cc" />
     <ClCompile Include="simplestdb_util.cc" />
+    <ClCompile Include="simplest_dbrow.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lru_cache.h" />
-    <ClInclude Include="simplestdb_disk_manager.h" />
+    <ClInclude Include="simplestdb_datarow.h" />
+    <ClInclude Include="simplestdb_dbrow.h" />
     <ClInclude Include="simplestdb_page.h" />
     <ClInclude Include="simplestdb_page_footer.h" />
     <ClInclude Include="simplestdb_row.h" />
+    <ClInclude Include="simplestdb_tableheaderrow.h" />
+    <ClInclude Include="simplestdb_tablepointerrow.h" />
     <ClInclude Include="simplestdb_token.h" />
     <ClInclude Include="simplestdb_util.h" />
   </ItemGroup>

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SIMPLESTDB_TOKEN_H_
+#define SIMPLESTDB_TOKEN_H_
+
 #include<string>
 #include<vector>
 
@@ -109,3 +111,4 @@ class CreateTableToken : public SQLToken {
 
 }//namespace sdb
 
+#endif // !SIMPLESTDB_TOKEN_H_

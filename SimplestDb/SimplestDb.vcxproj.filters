@@ -18,32 +18,38 @@
     <ClCompile Include="simplestdb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="simplestdb_page.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simplestdb_disk_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="simplestdb_page_footer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="simplestdb_row.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="simplestdb_util.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplest_dbrow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_tableheaderrow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_tablepointerrow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_datarow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_token.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_page.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_page_footer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lru_cache.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="simplestdb_page.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simplestdb_disk_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simplestdb_page_footer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="simplestdb_row.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,6 +60,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_dbrow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_tableheaderrow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_tablepointerrow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_datarow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_page_footer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
