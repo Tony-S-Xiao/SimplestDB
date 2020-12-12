@@ -33,7 +33,7 @@ public:
 		// Gets the address of the array within the page.
 		// Used to write the block of data into the disk.
 		std::byte* getPageStart();
-		// Gets the block by slot id.
+		// Gets the block by slot id. Returns [start of block, end of block).
 		std::pair<std::byte*, std::byte*> getBlock(OnPagePointer slot_id);
 		// Gets the size in bytes of the total space used on the page.
 		size16_t physicalSize();
@@ -41,7 +41,7 @@ public:
 		size16_t freeSpace();
 		// Gets the size in number of slots used.
 		size16_t size();
-		// Returns start, end, slot id of allocated block.
+		// Returns [start, end), slot id of allocated block.
 		std::tuple<std::byte*, std::byte*, unsigned short> allocateBlock(size16_t bytes_required);
 		// Used to implement linked list of pages.
 		OnDiskPointer getNextPage() const;
@@ -49,8 +49,6 @@ public:
 		void setNextPage(OnDiskPointer index);
 		void setPrevPage(OnDiskPointer index);
 private:
-		//helper function used to get the slot id of the first 
-		int getEmptyFooterSlot();
 		//arbitraily gets the address of one byte on the page. unused
 		std::byte* getAddressOfElement(OnPagePointer index);
 		//array of bytes(unsigned char)
