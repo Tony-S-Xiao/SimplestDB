@@ -41,7 +41,7 @@ public:
 		size16_t freeSpace();
 		// Gets the size in number of slots used.
 		size16_t size();
-		// Returns [start, end), slot id of allocated block.
+		// Returns [start, end), slot id of allocated block. returns nullptr, nullptr, 0 for size 0.
 		std::tuple<std::byte*, std::byte*, unsigned short> allocateBlock(size16_t bytes_required);
 		// Used to implement linked list of pages.
 		OnDiskPointer getNextPage() const;

@@ -54,7 +54,7 @@ std::tuple<std::byte*, std::byte*, unsigned short> sdb::SlottedPage::allocateBlo
 		footer->push_back(start_of_block);
 		footer->push_back(end_of_block - start_of_block);
 		footer->setFreeSpace(end_of_block);
-		return{ start_of_block_ptr, end_of_block_ptr, static_cast<unsigned short>(footer->size() / 2) };
+		return{ start_of_block_ptr, end_of_block_ptr, static_cast<unsigned short>(footer->size() / 2 - 1) };
 }
 std::byte* sdb::SlottedPage::getAddressOfElement(OnPagePointer index) {
 		return &data_[index];

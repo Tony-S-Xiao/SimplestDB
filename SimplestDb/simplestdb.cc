@@ -105,12 +105,29 @@ void test() {
   auto test_block_2 = test_page->allocateBlock(1);
   auto test_block_3 = test_page->allocateBlock(0);
   assert(std::get<0>(test_block_1) == test_page->getPageStart());
-  assert(std::get<1>(test_block_1) == test_page->getPageStart() + 11112);
+  assert(std::get<1>(test_block_1) == test_page->getPageStart() + 11111);
   assert(std::get<2>(test_block_1) == 0);
-  assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11112);
-  assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11113);
+  assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11111);
+  assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11112);
   assert(std::get<2>(test_block_2) == 1);
-  //assert(std::get<0>(test_block_3) == );
-  //assert(std::get<1>(test_block_3));
-  //assert(std::get<2>(test_block_3));
+  assert(std::get<0>(test_block_3) == nullptr);
+  assert(std::get<1>(test_block_3) == nullptr);
+  assert(std::get<2>(test_block_3) == 0);
+  { // lazy existing test
+  auto test_block_1 = test_page->getBlock(0);
+  auto test_block_2 = test_page->getBlock(1);
+  assert(std::get<0>(test_block_1) == test_page->getPageStart());
+  assert(std::get<1>(test_block_1) == test_page->getPageStart() + 11111);
+  assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11111);
+  assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11112);
+  }
+  sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ std::move(std::array<std::byte, sdb::kPageSize>(test_page->getPageStart())) };
+  { // lazy existing test
+    auto test_block_1 = test_page_existing->getBlock(0);
+    auto test_block_2 = test_page_existing->getBlock(1);
+    assert(std::get<0>(test_block_1) == test_page_existing->getPageStart());
+    assert(std::get<1>(test_block_1) == test_page_existing->getPageStart() + 11111);
+    assert(std::get<0>(test_block_2) == test_page_existing->getPageStart() + 11111);
+    assert(std::get<1>(test_block_2) == test_page_existing->getPageStart() + 11112);
+  }
 }

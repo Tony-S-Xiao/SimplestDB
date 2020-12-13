@@ -1,3 +1,24 @@
-﻿  simplestdb_page_footer.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page_footer.cc(40,44): warning C4244: 'return': conversion from 'int' to 'uint16_t', possible loss of data
+﻿  simplestdb.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(38,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(70,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(82,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(83,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(85,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(88,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(92,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(93,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(95,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(98,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(117,23): warning C4456: declaration of 'test_block_1' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(104,8): message : see declaration of 'test_block_1'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(118,23): warning C4456: declaration of 'test_block_2' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(105,8): message : see declaration of 'test_block_2'
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe
