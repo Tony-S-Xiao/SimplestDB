@@ -27,12 +27,15 @@ constexpr size_t kPageSize{ 65536 };
 class SlottedPage {
 public:
 		SlottedPage();
+		SlottedPage(const std::array<std::byte, kPageSize>&);
 		// The array can moved into the data of the page.
 		SlottedPage(std::array<std::byte, kPageSize>&&);
 		~SlottedPage();
 		// Gets the address of the array within the page.
 		// Used to write the block of data into the disk.
 		std::byte* getPageStart();
+		// Gets the 
+		std::array<std::byte, kPageSize>& extract();
 		// Gets the block by slot id. Returns [start of block, end of block).
 		std::pair<std::byte*, std::byte*> getBlock(OnPagePointer slot_id);
 		// Gets the size in bytes of the total space used on the page.
@@ -43,23 +46,20 @@ public:
 		size16_t size();
 		// Returns [start, end), slot id of allocated block. returns nullptr, nullptr, 0 for size 0.
 		std::tuple<std::byte*, std::byte*, unsigned short> allocateBlock(size16_t bytes_required);
-		// Used to implement linked list of pages.
+		// Used to implement doublely-linked list.
 		OnDiskPointer getNextPage() const;
 		OnDiskPointer getPrevPage() const;
 		void setNextPage(OnDiskPointer index);
 		void setPrevPage(OnDiskPointer index);
 private:
-		//arbitraily gets the address of one byte on the page. unused
-		std::byte* getAddressOfElement(OnPagePointer index);
-		//array of bytes(unsigned char)
 		std::array<std::byte, kPageSize> data_{};
-		//footer used to keep track of the location of blocks
-		//see footer class
-		Footer* footer;
-		//a disk pointer to the index of next page
+		// Footer used to keep track of the location of blocks.
+		Footer* footer_;
+		// These pointers implement a on-disk doublely-linked list.
 		OnDiskPointer* next_page;
-		//a disk pointer to the index of prev page
 		OnDiskPointer* prev_page;
+		// Gets the address of one byte on the page.
+		std::byte* getAddressOfElement(OnPagePointer index);
 };
 } // namespace sdb
 #endif // !SIMPLESTDB_PAGE_H_

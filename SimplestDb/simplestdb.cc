@@ -100,7 +100,7 @@ void test() {
   }
   // Page Test
   std::array<std::byte, sdb::kPageSize>* data_for_page = new std::array<std::byte, sdb::kPageSize>{};
-  sdb::SlottedPage* test_page = new sdb::SlottedPage{ std::move(*data_for_page) };
+  sdb::SlottedPage* test_page = new sdb::SlottedPage{ *data_for_page };
   auto test_block_1 = test_page->allocateBlock(11111);
   auto test_block_2 = test_page->allocateBlock(1);
   auto test_block_3 = test_page->allocateBlock(0);
@@ -121,7 +121,7 @@ void test() {
   assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11111);
   assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11112);
   }
-  sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ std::move(std::array<std::byte, sdb::kPageSize>(test_page->getPageStart())) };
+  sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ std::move(test_page->extract()) };
   { // lazy existing test
     auto test_block_1 = test_page_existing->getBlock(0);
     auto test_block_2 = test_page_existing->getBlock(1);
