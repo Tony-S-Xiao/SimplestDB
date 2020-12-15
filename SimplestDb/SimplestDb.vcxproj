@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lru_cache.cc" />
     <ClCompile Include="simplestdb.cc" />
     <ClCompile Include="simplestdb_datarow.cc" />
     <ClCompile Include="simplestdb_page.cc" />
@@ -27,6 +26,7 @@
     <ClCompile Include="simplestdb_row.cc" />
     <ClCompile Include="simplestdb_tableheaderrow.cc" />
     <ClCompile Include="simplestdb_tablepointerrow.cc" />
+    <ClCompile Include="simplestdb_test.cc" />
     <ClCompile Include="simplestdb_token.cc" />
     <ClCompile Include="simplestdb_util.cc" />
     <ClCompile Include="simplest_dbrow.cc" />
@@ -40,6 +40,7 @@
     <ClInclude Include="simplestdb_row.h" />
     <ClInclude Include="simplestdb_tableheaderrow.h" />
     <ClInclude Include="simplestdb_tablepointerrow.h" />
+    <ClInclude Include="simplestdb_test.h" />
     <ClInclude Include="simplestdb_token.h" />
     <ClInclude Include="simplestdb_util.h" />
   </ItemGroup>

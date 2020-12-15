@@ -45,7 +45,7 @@
     <ClCompile Include="simplestdb_page_footer.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lru_cache.cc">
+    <ClCompile Include="simplestdb_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_page_footer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

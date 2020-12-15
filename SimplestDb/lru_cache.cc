@@ -4,17 +4,17 @@
 #include<list>
 #include<unordered_map>
 #include<utility>
-template<typename K, typename V>
+template<class K, class V>
 LRUCache<K, V>::LRUCache(size_t capacity) : capacity_(capacity) {
 
 }
-template<typename K, typename V>
+template<class K, class V>
 LRUCache<K, V>::~LRUCache() {
   while (!data_.empty()) {
     evict();
   }
 }
-template<typename K, typename V>
+template<class K, class V>
 void LRUCache<K, V>::insert(K key, V value) {
   if (hash_map_.find(key) == hash_map_.end()) {
     auto iter = data_.begin();
@@ -26,18 +26,18 @@ void LRUCache<K, V>::insert(K key, V value) {
     }
   }
 }
-template<typename K, typename V>
+template<class K, class V>
 typename std::list<std::pair<K, V>>::iterator LRUCache<K, V>::find(K key) {
   data_.splice(data_.begin(), data_, hash_map_.find(key)->second);
   return hash_map_.find(key)->second;
 }
-template<typename K, typename V>
+template<class K, class V>
 bool LRUCache<K, V>::contains(K key) {
   if (hash_map_.find(key) != hash_map_.end())
     return true;
   return false;
 }
-template<typename K, typename V>
+template<class K, class V>
 void LRUCache<K, V>::evict() {
   auto iter = data_.end();
   --iter;

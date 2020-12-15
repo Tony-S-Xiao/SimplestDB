@@ -1,105 +1,28 @@
-﻿  simplestdb.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(38,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(70,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(82,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(83,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+﻿  simplestdb_test.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(31,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(63,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(75,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(76,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
           with
           [
               _Ty=sdb::bool8_t
           ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(85,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(88,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(92,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(93,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(78,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(81,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(85,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(86,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
           with
           [
               _Ty=sdb::bool8_t
           ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(95,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(98,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(117,23): warning C4456: declaration of 'test_block_1' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(104,8): message : see declaration of 'test_block_1'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(118,23): warning C4456: declaration of 'test_block_2' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(105,8): message : see declaration of 'test_block_2'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(127,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(104,8): message : see declaration of 'test_block_1'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(128,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb.cc(105,8): message : see declaration of 'test_block_2'
-  simplestdb_page.cc
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(163,47): warning C4244: 'initializing': conversion from '_Ty' to '_Ty', possible loss of data
-          with
-          [
-              _Ty=int
-          ]
-          and
-          [
-              _Ty=unsigned short
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<_Ty>(_Other &&)' being compiled
-          with
-          [
-              _This=unsigned short,
-              _Ty=int,
-              _Other=int
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<_Ty>(_Other &&)' being compiled
-          with
-          [
-              _This=unsigned short,
-              _Ty=int,
-              _Other=int
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::tuple<unsigned short>::tuple<std::_Exact_args_t,_Ty,,0>(_Tag,_This2 &&)' being compiled
-          with
-          [
-              _Ty=int,
-              _Tag=std::_Exact_args_t,
-              _This2=int
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::tuple<unsigned short>::tuple<std::_Exact_args_t,_Ty,,0>(_Tag,_This2 &&)' being compiled
-          with
-          [
-              _Ty=int,
-              _Tag=std::_Exact_args_t,
-              _This2=int
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::tuple<std::byte *,unsigned short>::tuple<std::_Exact_args_t,_Ty,int,0>(_Tag,_This2 &&,int &&)' being compiled
-          with
-          [
-              _Ty=nullptr,
-              _Tag=std::_Exact_args_t,
-              _This2=nullptr
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(245): message : see reference to function template instantiation 'std::tuple<std::byte *,unsigned short>::tuple<std::_Exact_args_t,_Ty,int,0>(_Tag,_This2 &&,int &&)' being compiled
-          with
-          [
-              _Ty=nullptr,
-              _Tag=std::_Exact_args_t,
-              _This2=nullptr
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(326): message : see reference to function template instantiation 'std::tuple<std::byte *,std::byte *,unsigned short>::tuple<std::_Exact_args_t,_Ty,_Ty,int,0>(_Tag,_This2 &&,_Ty &&,int &&)' being compiled
-          with
-          [
-              _Ty=nullptr,
-              _Tag=std::_Exact_args_t,
-              _This2=nullptr
-          ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple(326): message : see reference to function template instantiation 'std::tuple<std::byte *,std::byte *,unsigned short>::tuple<std::_Exact_args_t,_Ty,_Ty,int,0>(_Tag,_This2 &&,_Ty &&,int &&)' being compiled
-          with
-          [
-              _Ty=nullptr,
-              _Tag=std::_Exact_args_t,
-              _This2=nullptr
-          ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(62): message : see reference to function template instantiation 'std::tuple<std::byte *,std::byte *,unsigned short>::tuple<nullptr,nullptr,int,0>(_This2 &&,nullptr &&,int &&) noexcept' being compiled
-          with
-          [
-              _This2=nullptr
-          ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_page.cc(62): message : see reference to function template instantiation 'std::tuple<std::byte *,std::byte *,unsigned short>::tuple<nullptr,nullptr,int,0>(_This2 &&,nullptr &&,int &&) noexcept' being compiled
-          with
-          [
-              _This2=nullptr
-          ]
-  Generating Code...
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(88,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(91,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(110,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(97,8): message : see declaration of 'test_block_1'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(111,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(98,8): message : see declaration of 'test_block_2'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(119,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(97,8): message : see declaration of 'test_block_1'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(120,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(98,8): message : see declaration of 'test_block_2'
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

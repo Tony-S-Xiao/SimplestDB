@@ -1,10 +1,13 @@
 #include"simplestdb_disk_manager.h"
+#include"lru_cache.h"
+#include"simplestdb_page.h"
+
 #include<iostream>
+#include<cstddef>
 
 sdb::DiskManager::DiskManager() {
-		cache = new LRUCache<int, sdb::SlottedPage*>(kDiskManagerCacheSize);
+		cache = new LRUCache<size_t, sdb::SlottedPage*>(kDiskManagerCacheSize);
 }
-
 sdb::DiskManager::~DiskManager() {
 		delete cache;
 		file.close();
@@ -12,7 +15,7 @@ sdb::DiskManager::~DiskManager() {
 
 bool sdb::DiskManager::open(std::string filename)
 {
-	//must open in binary mode. windows adds extra characters if not in binary mode!
+	// Must open in binary mode. Windows adds extra characters if not in binary mode!
 	file.open(filename, std::ios::out | std::ios::in | std::ios::binary);
 	if (!file.good()) {
 		file.clear();
@@ -28,7 +31,7 @@ void sdb::DiskManager::closeCurrFile() {
 }
 
 sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
-		//lru cache deletes items in it
+		// Lru cache deletes items in it.
 		if (cache->contains(index)) {
 				std::cout << "LRU Cache Found Slot: " << index << std::endl;
 				return cache->find(index)->second;

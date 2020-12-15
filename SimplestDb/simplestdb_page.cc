@@ -20,14 +20,12 @@ sdb::SlottedPage::SlottedPage(std::array<std::byte, kPageSize>&& data) :
 		footer_ = new Footer(static_cast<std::byte*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page)));
 		prev_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page));
 		next_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page));
-		std::cout << "move" << std::endl;
 }
 sdb::SlottedPage::SlottedPage(const std::array<std::byte, kPageSize>& data) : 
 data_{data}	{
 		footer_ = new Footer(static_cast<std::byte*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page)));
 		prev_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page));
 		next_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page));
-		std::cout << "not move" << std::endl;
 }
 
 sdb::SlottedPage::~SlottedPage() {
