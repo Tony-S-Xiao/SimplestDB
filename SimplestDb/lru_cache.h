@@ -5,6 +5,8 @@
 #include<utility>
 #include<cstddef>
 
+// Hashmap + List implemented LRU cache. 
+// Only be used with things that std::hash supports.
 template<class K, class V>
 class LRUCache {
 public:
@@ -15,15 +17,16 @@ public:
   typename std::list<std::pair<K, V>>::iterator end();
   bool contains(K key);
 private:
+  // Automatically removes elements when the capacity is exceeded.
   void evict();
   std::list<std::pair<K, V>> data_{};
   size_t capacity_{};
   std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> hash_map_{};
 };
-
+// Implemenetation is kept in the same file to prevent linker errors.
+// TODO: how do I separate these templates properly?
 template<class K, class V>
 LRUCache<K, V>::LRUCache(size_t capacity) : capacity_(capacity) {
-
 }
 template<class K, class V>
 LRUCache<K, V>::~LRUCache() {
@@ -68,5 +71,4 @@ void LRUCache<K, V>::evict() {
   hash_map_.erase(iter->first);
   data_.erase(iter);
 }
-
 #endif // !LRU_CACHE_H_

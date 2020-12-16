@@ -5,6 +5,7 @@
 #include"simplestdb_tablepointerrow.h"
 #include"simplestdb_datarow.h"
 #include"simplestdb_page.h"
+#include"simplestdb_disk_manager.h"
 #include"lru_cache.h"
 
 #include<iostream>
@@ -114,6 +115,7 @@ void sdb::test() {
     assert(std::get<0>(test_block_2) == test_page->getPageStart() + 11111);
     assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11112);
   }
+
   sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ std::move(test_page->extract()) };
   { // lazy existing test
     auto test_block_1 = test_page_existing->getBlock(0);
@@ -123,6 +125,7 @@ void sdb::test() {
     assert(std::get<0>(test_block_2) == test_page_existing->getPageStart() + 11111);
     assert(std::get<1>(test_block_2) == test_page_existing->getPageStart() + 11112);
   }
+
   // lru cache test
   LRUCache<int, int>* cache = new LRUCache<int, int>(1000);
   for (int i = 0; i < 1000; ++i) {
@@ -146,4 +149,40 @@ void sdb::test() {
   for (int i = 500; i < 1000; ++i) {
     assert(cache->find(i) == cache->end());
   }
+  // diskmanager test
+  sdb::DiskManager disk_man;
+  disk_man.open({ "test_db.sdb" });
+  sdb::SlottedPage* test_page_1 = disk_man.readFromSlot(0);
+  auto block_1 = test_page_1->getBlock(0);
+  std::string check("wow i ho");
+  for (int i = 0; i < check.size(); ++i) {
+    assert(static_cast<char>(*block_1.first) == check[i]);
+    ++block_1.first;
+  }
+  auto block_2 = test_page_1->allocateBlock(1877);
+  int slot_id = std::get<2>(block_2);
+  char c = 0;
+  while (std::get<0>(block_2) != std::get<1>(block_2)) {
+    *std::get<0>(block_2) = static_cast<std::byte>(c);
+    ++c;
+    ++std::get<0>(block_2);
+  }
+  disk_man.writeToSlot(test_page_1, 0);
+  disk_man.closeCurrFile();
+  disk_man.open({ "test_db.sdb" });
+  sdb::SlottedPage* test_page_2 = disk_man.readFromSlot(0);
+  auto block_3 = test_page_2->getBlock(0);
+  for (int i = 0; i < check.size(); ++i) {
+    assert(static_cast<char>(*std::get<0>(block_3)) == check[i]);
+    ++std::get<0>(block_3);
+  }
+  auto block_4 = test_page_2->getBlock(slot_id);
+  c = 0;
+  while (std::get<0>(block_4) != std::get<1>(block_4)) {
+    assert(static_cast<char>(*std::get<0>(block_4)) == c);
+    ++c;
+    ++std::get<0>(block_4);
+  }
+  delete cache;
+
 }

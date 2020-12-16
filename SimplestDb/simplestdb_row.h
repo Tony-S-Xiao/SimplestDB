@@ -15,14 +15,13 @@ using bool8_t = char;
 using OnRowPointer = uint16_t;
 // On disk pointers(page id) are the index of page in .sdb file 0th indexed.
 using OnDiskPointer = uint32_t;
-
 // Base class to be derived.
 class Row {
  public:
   // Number of bytes of the row.
   size_t physicalSize();
  protected:
-  // Only used by derived classes. Requires [begin, end)
+  // Only used by derived classes. Requires [begin, end).
   Row(std::byte* begin, std::byte* end);
   std::byte* row_begin_;
   std::byte* row_end_;

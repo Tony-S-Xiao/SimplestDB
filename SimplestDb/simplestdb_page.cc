@@ -29,6 +29,7 @@ data_{data}	{
 }
 
 sdb::SlottedPage::~SlottedPage() {
+		delete &data_;
 		delete footer_;
 }
 std::byte* sdb::SlottedPage::getPageStart() {

@@ -56,7 +56,7 @@ bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, int index)
 		file.clear();
 		file.seekp(index * static_cast<long long int>(kPageSize));
 		file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
-		//std::cout << "Wrote: " << index * static_cast<long long int>(kPageSize) << " " << file.good() << std::endl;
+		std::cout << "Wrote: " << index * static_cast<long long int>(kPageSize) << " " << file.good() << std::endl;
 		return true;
 	}
 	return false;

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="simplestdb.cc" />
     <ClCompile Include="simplestdb_datarow.cc" />
+    <ClCompile Include="simplestdb_disk_manager.cc" />
     <ClCompile Include="simplestdb_page.cc" />
     <ClCompile Include="simplestdb_page_footer.cc" />
     <ClCompile Include="simplestdb_row.cc" />
@@ -35,6 +36,7 @@
     <ClInclude Include="lru_cache.h" />
     <ClInclude Include="simplestdb_datarow.h" />
     <ClInclude Include="simplestdb_dbrow.h" />
+    <ClInclude Include="simplestdb_disk_manager.h" />
     <ClInclude Include="simplestdb_page.h" />
     <ClInclude Include="simplestdb_page_footer.h" />
     <ClInclude Include="simplestdb_row.h" />

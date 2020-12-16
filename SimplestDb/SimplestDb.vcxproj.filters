@@ -48,6 +48,9 @@
     <ClCompile Include="simplestdb_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplestdb_disk_manager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplestdb_row.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_disk_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
