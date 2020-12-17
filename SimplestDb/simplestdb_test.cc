@@ -184,5 +184,13 @@ void sdb::test() {
     ++std::get<0>(block_4);
   }
   delete cache;
-
+  //sdb::SlottedPage* testing_page = new sdb::SlottedPage(kZeroPage);
+  ////std::cout << disk_man.append(testing_page) << std::endl;
+  //delete testing_page;
+  // leak tests
+  for (int i = 0; i < 100000; ++i) {
+    std::array<std::byte, kPageSize>* wow = new std::array<std::byte, kPageSize>();
+    sdb::SlottedPage* testing_page1 = new sdb::SlottedPage(std::move(*wow));
+    delete testing_page1;
+  }
 }

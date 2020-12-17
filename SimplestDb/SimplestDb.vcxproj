@@ -29,6 +29,10 @@
     <ClCompile Include="simplestdb_tablepointerrow.cc" />
     <ClCompile Include="simplestdb_test.cc" />
     <ClCompile Include="simplestdb_token.cc" />
+    <ClCompile Include="simplestdb_token_meta.cc" />
+    <ClCompile Include="simplestdb_token_sql.cc" />
+    <ClCompile Include="simplestdb_token_sqlquery.cc" />
+    <ClCompile Include="simplestdb_token_sqlwritetoken.cc" />
     <ClCompile Include="simplestdb_util.cc" />
     <ClCompile Include="simplest_dbrow.cc" />
   </ItemGroup>
@@ -44,6 +48,10 @@
     <ClInclude Include="simplestdb_tablepointerrow.h" />
     <ClInclude Include="simplestdb_test.h" />
     <ClInclude Include="simplestdb_token.h" />
+    <ClInclude Include="simplestdb_token_meta.h" />
+    <ClInclude Include="simplestdb_token_sql.h" />
+    <ClInclude Include="simplestdb_token_sqlquery.h" />
+    <ClInclude Include="simplestdb_token_sqlwritetoken.h" />
     <ClInclude Include="simplestdb_util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

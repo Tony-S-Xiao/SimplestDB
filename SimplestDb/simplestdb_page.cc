@@ -10,40 +10,27 @@
 #include<cstddef>
 #include<iostream>
 
-sdb::SlottedPage::SlottedPage() {
-		footer_ = new Footer(static_cast<std::byte*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page)));
-		prev_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page));
-		next_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page));
+sdb::SlottedPage::SlottedPage(const std::array<std::byte, kPageSize>& data) :
+		data_ptr_(std::unique_ptr<std::array<std::byte, kPageSize>>(new std::array<std::byte, kPageSize>(data))) {
 }
 sdb::SlottedPage::SlottedPage(std::array<std::byte, kPageSize>&& data) :
-		data_{ std::move(data) } { //TODO: THE LRU CACHE SHARES OWNERSHIP IS IT SAFE TO MOVE?
-		footer_ = new Footer(static_cast<std::byte*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page)));
-		prev_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page));
-		next_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page));
+		data_ptr_(std::unique_ptr<std::array<std::byte, kPageSize>>(new std::array<std::byte, kPageSize>(std::move(data)))) {
 }
-sdb::SlottedPage::SlottedPage(const std::array<std::byte, kPageSize>& data) : 
-data_{data}	{
-		footer_ = new Footer(static_cast<std::byte*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page)));
-		prev_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page) - sizeof(*prev_page));
-		next_page = reinterpret_cast<OnDiskPointer*>(&data_[65535] + 1 - sizeof(*next_page));
-}
-
 sdb::SlottedPage::~SlottedPage() {
-		delete &data_;
 		delete footer_;
 }
 std::byte* sdb::SlottedPage::getPageStart() {
-	return data_.data();
+	 return data_ptr_->data();
 }
 std::array<std::byte, sdb::kPageSize>& sdb::SlottedPage::extract() {
-		return data_;
+		return *data_ptr_;
 }
 std::pair<std::byte*, std::byte*> sdb::SlottedPage::getBlock(OnPagePointer slot_id) {
 		// Gets the pair of pointers representing the block.
 		// Uses two numbers in the footer. one for location one for length
 		OnPagePointer start = (*footer_)[2*slot_id];
 		OnPagePointer end = start + (*footer_)[2*slot_id + 1];
-		return { static_cast<std::byte*>(&data_[start]), static_cast<std::byte*>(&data_[end]) };
+		return { &(*data_ptr_)[start], &(*data_ptr_)[end] };
 }
 sdb::size16_t sdb::SlottedPage::physicalSize() {
 		size16_t space = footer_->getFreeSpacePtr();

@@ -12,7 +12,7 @@ namespace sdb {
 // The capacity of the LRU cache in diskmanager.
 constexpr int kDiskManagerCacheSize{ 1000 };
 // Constant page full of zeros used to delete a slot in the database.
-constexpr std::array<char, kPageSize> kZeroPage{};
+constexpr std::array<std::byte, kPageSize> kZeroPage{};
 // This object is used to load pages from the .sdb file into memory.
 // This object should be the sole owner of pages.
 class DiskManager {
@@ -29,7 +29,7 @@ public:
 	// Overwrites the existing page.
 	bool writeToSlot(SlottedPage* to_write, int index);
 	// Writes to the end of the .sdb file.
-	bool append(SlottedPage* to_write);
+	size_t append(SlottedPage* to_write);
 	// Deletes the page at the given slot.
 	// Writes a page of zeros.
 	void zeroOutSlot(size_t index);

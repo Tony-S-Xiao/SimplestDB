@@ -62,13 +62,13 @@ bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, int index)
 	return false;
 }
 
-bool sdb::DiskManager::append(SlottedPage* to_write) {
+size_t sdb::DiskManager::append(SlottedPage* to_write) {
 		if (file.good()) {
 				file.clear();
 				file.seekg(0, std::ios::end);
 				file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
 				//std::cout << "Append." << std::endl;
-				return true;
+				return file.tellg() / kPageSize;
 		}
 		return false;
 }
@@ -78,6 +78,6 @@ void sdb::DiskManager::zeroOutSlot(size_t index) {
 		file.clear();
 		file.seekg(index * static_cast<long long int>(kPageSize));
 		//std::cout << "ZERO: " << index * static_cast<long long int>(kPageSize) << std::endl;
-		file.write(&kZeroPage[0], kPageSize);
+		file.write(static_cast<char*>(kZeroSlottedPage.getPageStart()), kPageSize);
 	}
 }

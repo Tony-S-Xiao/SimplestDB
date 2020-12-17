@@ -7,6 +7,7 @@
 #include<cstdint>
 #include<array>
 #include<utility>
+#include<memory>
 
 namespace sdb {
 // This pointer indicates the position of a std::byte on the page.
@@ -26,9 +27,7 @@ constexpr size_t kPageSize{ 65536 };
 // The footer object is used to keep track of the positions of the blocks.
 class SlottedPage {
 public:
-		SlottedPage();
 		SlottedPage(const std::array<std::byte, kPageSize>&);
-		// The array can moved into the data of the page.
 		SlottedPage(std::array<std::byte, kPageSize>&&);
 		~SlottedPage();
 		// Gets the address of the array within the page.
@@ -52,7 +51,7 @@ public:
 		void setNextPage(OnDiskPointer index);
 		void setPrevPage(OnDiskPointer index);
 private:
-		std::array<std::byte, kPageSize> data_{};
+		std::unique_ptr<std::array<std::byte, kPageSize>> data_ptr_{};
 		// Footer used to keep track of the location of blocks.
 		Footer* footer_;
 		// These pointers implement a on-disk doublely-linked list.

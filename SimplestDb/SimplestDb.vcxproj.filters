@@ -51,6 +51,18 @@
     <ClCompile Include="simplestdb_disk_manager.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplestdb_token_meta.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_token_sql.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_token_sqlwritetoken.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_token_sqlquery.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplestdb_row.h">
@@ -87,6 +99,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_disk_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token_meta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token_sql.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token_sqlwritetoken.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token_sqlquery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
