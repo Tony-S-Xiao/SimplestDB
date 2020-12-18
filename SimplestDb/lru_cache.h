@@ -12,10 +12,12 @@ class LRUCache {
 public:
   LRUCache(size_t capacity);
   ~LRUCache();
-  void insert(K key, V value);
+  void insert(K key, const V& value);
+  void insert(K key, V&& value);
   typename std::list<std::pair<K, V>>::iterator find(K key);
   typename std::list<std::pair<K, V>>::iterator end();
   bool contains(K key);
+  void erase(K key);
 private:
   // Automatically removes elements when the capacity is exceeded.
   void evict();
@@ -35,10 +37,22 @@ LRUCache<K, V>::~LRUCache() {
   }
 }
 template<class K, class V>
-void LRUCache<K, V>::insert(K key, V value) {
+void LRUCache<K, V>::insert(K key, const V& value) {
   if (hash_map_.find(key) == hash_map_.end()) {
     auto iter = data_.begin();
-    data_.insert(iter, { key, value });
+    data_.insert(key,  value);
+    --iter;
+    hash_map_.insert({ key, iter });
+    if (data_.size() > capacity_) {
+      evict();
+    }
+  }
+}
+template<class K, class V>
+void LRUCache<K, V>::insert(K key, V&& value) {
+  if (hash_map_.find(key) == hash_map_.end()) {
+    auto iter = data_.begin();
+    data_.insert(iter, { key, std::move(value) });
     --iter;
     hash_map_.insert({ key, iter });
     if (data_.size() > capacity_) {
@@ -70,5 +84,13 @@ void LRUCache<K, V>::evict() {
   --iter;
   hash_map_.erase(iter->first);
   data_.erase(iter);
+}
+template<class K, class V>
+void LRUCache<K, V>::erase(K key) {
+  auto iter = hash_map_.find(key);
+  if (iter != hash_map_.end()) {
+  data_.erase(iter->second);
+  hash_map_.erase(iter->first);
+  }
 }
 #endif // !LRU_CACHE_H_

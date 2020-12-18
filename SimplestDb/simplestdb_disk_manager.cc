@@ -6,7 +6,7 @@
 #include<cstddef>
 
 sdb::DiskManager::DiskManager() {
-		cache = new LRUCache<size_t, sdb::SlottedPage*>(kDiskManagerCacheSize);
+		cache = new LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>>(kDiskManagerCacheSize);
 }
 sdb::DiskManager::~DiskManager() {
 		delete cache;
@@ -34,22 +34,22 @@ sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
 		// Lru cache deletes items in it.
 		if (cache->contains(index)) {
 				std::cout << "LRU Cache Found Slot: " << index << std::endl;
-				return cache->find(index)->second;
+				return cache->find(index)->second.get();
 		}
 		file.seekg(0, std::ios::end);
 	if (file.good() && index * static_cast<long long int>(kPageSize) < file.tellg()) {
-		std::array<std::byte, kPageSize> *temp = new std::array<std::byte, kPageSize>{};
+		std::array<std::byte, kPageSize>* temp{ new std::array<std::byte, kPageSize>{} };
 		file.clear();
 		file.seekg(index * static_cast<long long int>(kPageSize));
-		file.read(reinterpret_cast<char*>(&(*temp)[0]), kPageSize);
-		SlottedPage* result{ new SlottedPage(std::move(*temp)) };
-		cache->insert(index, result);
-		return result;
+		file.read(reinterpret_cast<char*>(&(temp)[0]), kPageSize);
+		std::unique_ptr<SlottedPage> result{ new SlottedPage(temp) };
+		cache->insert(index, std::move(result));
+		return result.get();
 	}
 	return nullptr;
 }
 
-bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, int index)
+bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, size_t index)
 {
 		file.seekp(0, std::ios::end);
 	if (file.good()) {
@@ -57,6 +57,7 @@ bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, int index)
 		file.seekp(index * static_cast<long long int>(kPageSize));
 		file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
 		std::cout << "Wrote: " << index * static_cast<long long int>(kPageSize) << " " << file.good() << std::endl;
+		cache->erase(index);
 		return true;
 	}
 	return false;
@@ -78,6 +79,6 @@ void sdb::DiskManager::zeroOutSlot(size_t index) {
 		file.clear();
 		file.seekg(index * static_cast<long long int>(kPageSize));
 		//std::cout << "ZERO: " << index * static_cast<long long int>(kPageSize) << std::endl;
-		file.write(static_cast<char*>(kZeroSlottedPage.getPageStart()), kPageSize);
+		file.write(&kZeroPage[0], kPageSize);
 	}
 }

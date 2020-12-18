@@ -16,6 +16,9 @@
 #include<cassert>
 
 void sdb::test() {
+  sdb::DiskManager disk_man;
+  disk_man.open({ "test_db.sdb" });
+  disk_man.zeroOutSlot(0);
   // DBRow test
   std::vector<std::byte> dbrow_test(sdb::DBRow::calcSizeRequired(std::string("unreal")), static_cast<std::byte>(0));
   sdb::DBRow db_test_row(&*dbrow_test.begin(), &*(dbrow_test.end() - 1) + 1);
@@ -94,7 +97,7 @@ void sdb::test() {
   }
   // Page Test
   std::array<std::byte, sdb::kPageSize>* data_for_page = new std::array<std::byte, sdb::kPageSize>{};
-  sdb::SlottedPage* test_page = new sdb::SlottedPage{ *data_for_page };
+  sdb::SlottedPage* test_page = new sdb::SlottedPage{ data_for_page };
   auto test_block_1 = test_page->allocateBlock(11111);
   auto test_block_2 = test_page->allocateBlock(1);
   auto test_block_3 = test_page->allocateBlock(0);
@@ -116,7 +119,7 @@ void sdb::test() {
     assert(std::get<1>(test_block_2) == test_page->getPageStart() + 11112);
   }
 
-  sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ std::move(test_page->extract()) };
+  sdb::SlottedPage* test_page_existing = new sdb::SlottedPage{ &test_page->extract() };
   { // lazy existing test
     auto test_block_1 = test_page_existing->getBlock(0);
     auto test_block_2 = test_page_existing->getBlock(1);
@@ -149,10 +152,16 @@ void sdb::test() {
   for (int i = 500; i < 1000; ++i) {
     assert(cache->find(i) == cache->end());
   }
+  LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>>* cache_unique = new LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>>(7);
+  for (int i = 0; i < 100000; ++i) {
+    std::unique_ptr<sdb::SlottedPage> testing_page1(new sdb::SlottedPage(new std::array<std::byte, kPageSize>()));
+    cache_unique->insert(i, std::move(testing_page1));
+  }
+  delete cache_unique;
+  delete cache;
   // diskmanager test
-  sdb::DiskManager disk_man;
-  disk_man.open({ "test_db.sdb" });
-  sdb::SlottedPage* test_page_1 = disk_man.readFromSlot(0);
+
+  /*sdb::SlottedPage* test_page_1 = disk_man.readFromSlot(0);
   auto block_1 = test_page_1->getBlock(0);
   std::string check("wow i ho");
   for (int i = 0; i < check.size(); ++i) {
@@ -182,15 +191,11 @@ void sdb::test() {
     assert(static_cast<char>(*std::get<0>(block_4)) == c);
     ++c;
     ++std::get<0>(block_4);
-  }
-  delete cache;
+  }*/
+
   //sdb::SlottedPage* testing_page = new sdb::SlottedPage(kZeroPage);
   ////std::cout << disk_man.append(testing_page) << std::endl;
   //delete testing_page;
   // leak tests
-  for (int i = 0; i < 100000; ++i) {
-    std::array<std::byte, kPageSize>* wow = new std::array<std::byte, kPageSize>();
-    sdb::SlottedPage* testing_page1 = new sdb::SlottedPage(std::move(*wow));
-    delete testing_page1;
-  }
+
 }

@@ -10,11 +10,17 @@
 #include<cstddef>
 #include<iostream>
 
-sdb::SlottedPage::SlottedPage(const std::array<std::byte, kPageSize>& data) :
-		data_ptr_(std::unique_ptr<std::array<std::byte, kPageSize>>(new std::array<std::byte, kPageSize>(data))) {
+sdb::SlottedPage::SlottedPage(std::unique_ptr<std::array<std::byte, kPageSize>>&& data_ptr) :
+		data_ptr_(std::move(data_ptr)) {
+		next_page = reinterpret_cast<OnDiskPointer*>(&*((*data_ptr_).end() - sizeof(OnDiskPointer)));
+		prev_page = next_page + 1;
+		footer_ = new Footer(reinterpret_cast<std::byte*>(prev_page));
 }
-sdb::SlottedPage::SlottedPage(std::array<std::byte, kPageSize>&& data) :
-		data_ptr_(std::unique_ptr<std::array<std::byte, kPageSize>>(new std::array<std::byte, kPageSize>(std::move(data)))) {
+sdb::SlottedPage::SlottedPage(std::array<std::byte, kPageSize>* data_ptr) :
+		data_ptr_(data_ptr) {
+		next_page = reinterpret_cast<OnDiskPointer*>(&*((*data_ptr_).end() - sizeof(OnDiskPointer)));
+		prev_page = next_page + 1;
+		footer_ = new Footer(reinterpret_cast<std::byte*>(prev_page));
 }
 sdb::SlottedPage::~SlottedPage() {
 		delete footer_;
@@ -38,7 +44,7 @@ sdb::size16_t sdb::SlottedPage::physicalSize() {
 		return space + footer_size;
 }
 sdb::size16_t sdb::SlottedPage::freeSpace() {
-		return static_cast<size16_t>(kPageSize - physicalSize());
+		return kPageSize - physicalSize();
 }
 sdb::size16_t sdb::SlottedPage::size() {
   // Uses two numbers in the footer_ for each block
@@ -48,15 +54,15 @@ std::tuple<std::byte*, std::byte*, unsigned short> sdb::SlottedPage::allocateBlo
 		if (bytes_required == 0) return { nullptr, nullptr, 0 };
 		OnPagePointer start_of_block = footer_->getFreeSpacePtr();
 		OnPagePointer end_of_block = footer_->getFreeSpacePtr() + bytes_required;
-		std::byte* start_of_block_ptr = &data_[start_of_block];
-		std::byte* end_of_block_ptr = &data_[end_of_block];
+		std::byte* start_of_block_ptr = &(*data_ptr_)[start_of_block];
+		std::byte* end_of_block_ptr = &(*data_ptr_)[end_of_block];
 		footer_->push_back(start_of_block);
 		footer_->push_back(end_of_block - start_of_block);
 		footer_->setFreeSpace(end_of_block);
 		return{ start_of_block_ptr, end_of_block_ptr, static_cast<unsigned short>(footer_->size() / 2 - 1) };
 }
 std::byte* sdb::SlottedPage::getAddressOfElement(OnPagePointer index) {
-		return &data_[index];
+		return &(*data_ptr_)[index];
 }
 sdb::OnDiskPointer sdb::SlottedPage::getNextPage() const {
 		return *next_page;
