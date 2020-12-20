@@ -1,32 +1,4 @@
-﻿  simplestdb.cc
-  simplestdb_disk_manager.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(72,25): warning C4244: 'return': conversion from 'std::streamoff' to 'size_t', possible loss of data
-  simplestdb_test.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(35,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(67,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(79,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(80,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
-          with
-          [
-              _Ty=sdb::bool8_t
-          ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(82,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(85,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(89,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(90,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
-          with
-          [
-              _Ty=sdb::bool8_t
-          ]
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(92,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(95,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(114,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(101,8): message : see declaration of 'test_block_1'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(115,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(102,8): message : see declaration of 'test_block_2'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(124,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(101,8): message : see declaration of 'test_block_1'
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(125,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(102,8): message : see declaration of 'test_block_2'
-  Generating Code...
+﻿  simplestdb_disk_manager.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(67,52): warning C4244: 'argument': conversion from 'std::streamoff' to 'size_t', possible loss of data
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(68,38): warning C4244: 'return': conversion from 'std::streamoff' to 'size_t', possible loss of data
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

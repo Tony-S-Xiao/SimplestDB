@@ -152,6 +152,7 @@ void sdb::test() {
   for (int i = 500; i < 1000; ++i) {
     assert(cache->find(i) == cache->end());
   }
+  // leak tests
   LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>>* cache_unique = new LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>>(7);
   for (int i = 0; i < 100000; ++i) {
     std::unique_ptr<sdb::SlottedPage> testing_page1(new sdb::SlottedPage(new std::array<std::byte, kPageSize>()));
@@ -159,43 +160,63 @@ void sdb::test() {
   }
   delete cache_unique;
   delete cache;
-  // diskmanager test
-
-  /*sdb::SlottedPage* test_page_1 = disk_man.readFromSlot(0);
-  auto block_1 = test_page_1->getBlock(0);
-  std::string check("wow i ho");
-  for (int i = 0; i < check.size(); ++i) {
-    assert(static_cast<char>(*block_1.first) == check[i]);
-    ++block_1.first;
-  }
-  auto block_2 = test_page_1->allocateBlock(1877);
-  int slot_id = std::get<2>(block_2);
-  char c = 0;
-  while (std::get<0>(block_2) != std::get<1>(block_2)) {
-    *std::get<0>(block_2) = static_cast<std::byte>(c);
-    ++c;
-    ++std::get<0>(block_2);
-  }
-  disk_man.writeToSlot(test_page_1, 0);
   disk_man.closeCurrFile();
-  disk_man.open({ "test_db.sdb" });
-  sdb::SlottedPage* test_page_2 = disk_man.readFromSlot(0);
-  auto block_3 = test_page_2->getBlock(0);
-  for (int i = 0; i < check.size(); ++i) {
-    assert(static_cast<char>(*std::get<0>(block_3)) == check[i]);
-    ++std::get<0>(block_3);
-  }
-  auto block_4 = test_page_2->getBlock(slot_id);
-  c = 0;
-  while (std::get<0>(block_4) != std::get<1>(block_4)) {
-    assert(static_cast<char>(*std::get<0>(block_4)) == c);
-    ++c;
-    ++std::get<0>(block_4);
-  }*/
-
-  //sdb::SlottedPage* testing_page = new sdb::SlottedPage(kZeroPage);
-  ////std::cout << disk_man.append(testing_page) << std::endl;
-  //delete testing_page;
-  // leak tests
-
+  // diskmanager test
+  disk_man.open("test_db.sdb");
+  disk_man.zeroOutSlot(0);
+  std::vector<std::string> data_strings{ "abc", "abcde", "aaaaaaaaaaaaa", "00" };
+  std::vector<std::string> data_date_time{};
+  std::vector<int> data_int{0, -1, 1, 1234, INT_MAX, INT_MIN};
+  std::vector<bool8_t> data_bool{true, false};
+  sdb::SlottedPage* page_zero = disk_man.readFromSlot(0);
+  auto allocated_1 = page_zero->allocateBlock(sdb::DataRow::calcSizeRequired(data_bool, data_int, data_date_time, data_strings));
+  sdb::DataRow row{ std::get<0>(allocated_1), std::get<1>(allocated_1) };
+  row.loadData(data_bool, data_int, data_date_time, data_strings);
+  assert(std::get<2>(allocated_1) == 0);
+  assert(row.getVarChar(0) == data_strings[0]);
+  assert(row.getVarChar(1) == data_strings[1]);
+  assert(row.getVarChar(2) == data_strings[2]);
+  assert(row.getVarChar(3) == data_strings[3]);
+  assert(row.getInteger(0) == data_int[0]);
+  assert(row.getInteger(1) == data_int[1]);
+  assert(row.getInteger(2) == data_int[2]);
+  assert(row.getInteger(3) == data_int[3]);
+  assert(row.getInteger(4) == data_int[4]);
+  assert(row.getInteger(5) == data_int[5]);
+  assert(row.getBoolean(0) == data_bool[0]);
+  assert(row.getBoolean(1) == data_bool[1]);
+  disk_man.writeToSlot(page_zero, 0);
+  disk_man.writeToSlot(page_zero, 1);
+  disk_man.closeCurrFile();
+  disk_man.open("test_db.sdb");
+  sdb::SlottedPage* page_one = disk_man.readFromSlot(0);
+  sdb::SlottedPage* page_two = disk_man.readFromSlot(1);
+  auto block1 = page_one->getBlock(0);
+  auto block2 = page_two->getBlock(0);
+  sdb::DataRow row1{ std::get<0>(block1), std::get<1>(block1) };
+  sdb::DataRow row2{ std::get<0>(block2), std::get<1>(block2) };
+  assert(row1.getVarChar(0) == data_strings[0]);
+  assert(row1.getVarChar(1) == data_strings[1]);
+  assert(row1.getVarChar(2) == data_strings[2]);
+  assert(row1.getVarChar(3) == data_strings[3]);
+  assert(row1.getInteger(0) == data_int[0]);
+  assert(row1.getInteger(1) == data_int[1]);
+  assert(row1.getInteger(2) == data_int[2]);
+  assert(row1.getInteger(3) == data_int[3]);
+  assert(row1.getInteger(4) == data_int[4]);
+  assert(row1.getInteger(5) == data_int[5]);
+  assert(row1.getBoolean(0) == data_bool[0]);
+  assert(row1.getBoolean(1) == data_bool[1]);
+  assert(row2.getVarChar(0) == data_strings[0]);
+  assert(row2.getVarChar(1) == data_strings[1]);
+  assert(row2.getVarChar(2) == data_strings[2]);
+  assert(row2.getVarChar(3) == data_strings[3]);
+  assert(row2.getInteger(0) == data_int[0]);
+  assert(row2.getInteger(1) == data_int[1]);
+  assert(row2.getInteger(2) == data_int[2]);
+  assert(row2.getInteger(3) == data_int[3]);
+  assert(row2.getInteger(4) == data_int[4]);
+  assert(row2.getInteger(5) == data_int[5]);
+  assert(row2.getBoolean(0) == data_bool[0]);
+  assert(row2.getBoolean(1) == data_bool[1]);
 }

@@ -33,6 +33,7 @@ bool writeToSlot(SlottedPage* to_write, size_t index);
 	// Deletes the page at the given slot.
 	// Writes a page of zeros.
 	void zeroOutSlot(size_t index);
+
 private:
 	// Fstream object of the current open file.
 	std::fstream file{};

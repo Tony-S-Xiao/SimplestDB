@@ -31,9 +31,7 @@ void sdb::DiskManager::closeCurrFile() {
 }
 
 sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
-		// Lru cache deletes items in it.
 		if (cache->contains(index)) {
-				std::cout << "LRU Cache Found Slot: " << index << std::endl;
 				return cache->find(index)->second.get();
 		}
 		file.seekg(0, std::ios::end);
@@ -44,7 +42,7 @@ sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
 		file.read(reinterpret_cast<char*>(&(temp)[0]), kPageSize);
 		std::unique_ptr<SlottedPage> result{ new SlottedPage(temp) };
 		cache->insert(index, std::move(result));
-		return result.get();
+		return cache->find(index)->second.get();
 	}
 	return nullptr;
 }
@@ -53,7 +51,6 @@ bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, size_t index)
 {
 		file.seekp(0, std::ios::end);
 	if (file.good()) {
-		file.clear();
 		file.seekp(index * static_cast<long long int>(kPageSize));
 		file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
 		std::cout << "Wrote: " << index * static_cast<long long int>(kPageSize) << " " << file.good() << std::endl;
@@ -66,10 +63,9 @@ bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, size_t index)
 size_t sdb::DiskManager::append(SlottedPage* to_write) {
 		if (file.good()) {
 				file.clear();
-				file.seekg(0, std::ios::end);
-				file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
-				//std::cout << "Append." << std::endl;
-				return file.tellg() / kPageSize;
+				file.seekp(0, std::ios::end);
+				writeToSlot(to_write, file.tellp() / kPageSize + 1);
+				return  file.tellp() / kPageSize + 1;
 		}
 		return false;
 }
@@ -78,7 +74,6 @@ void sdb::DiskManager::zeroOutSlot(size_t index) {
 	if (file.good()) {
 		file.clear();
 		file.seekg(index * static_cast<long long int>(kPageSize));
-		//std::cout << "ZERO: " << index * static_cast<long long int>(kPageSize) << std::endl;
 		file.write(&kZeroPage[0], kPageSize);
 	}
 }
