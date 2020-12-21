@@ -27,18 +27,19 @@ public:
 	SlottedPage* readFromSlot(size_t index);
 	// Writes to a given slot.
 	// Overwrites the existing page.
+	// Deletes the page from memory after writing.
 bool writeToSlot(SlottedPage* to_write, size_t index);
 	// Writes to the end of the .sdb file.
+	// Deletes the page from memory after writing.
 	size_t append(SlottedPage* to_write);
 	// Deletes the page at the given slot.
 	// Writes a page of zeros.
 	void zeroOutSlot(size_t index);
-
 private:
 	// Fstream object of the current open file.
 	std::fstream file{};
 	// Lru cache of opened pages.
-	// Lapacity hard coded in the kDiskManagerCacheSize.
+	// Capacity hard coded in the kDiskManagerCacheSize.
 	LRUCache<size_t, std::unique_ptr<sdb::SlottedPage>> *cache;
 };
 }  // namespace sdb

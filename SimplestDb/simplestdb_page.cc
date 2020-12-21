@@ -22,6 +22,13 @@ sdb::SlottedPage::SlottedPage(std::array<std::byte, kPageSize>* data_ptr) :
 		prev_page = next_page + 1;
 		footer_ = new Footer(reinterpret_cast<std::byte*>(prev_page));
 }
+sdb::SlottedPage::SlottedPage(const SlottedPage& to_copy) :
+data_ptr_(new std::array<std::byte, kPageSize>(*to_copy.data_ptr_))
+{
+		next_page = reinterpret_cast<OnDiskPointer*>(&*((*data_ptr_).end() - sizeof(OnDiskPointer)));
+		prev_page = next_page + 1;
+		footer_ = new Footer(reinterpret_cast<std::byte*>(prev_page));
+}
 sdb::SlottedPage::~SlottedPage() {
 		delete footer_;
 }

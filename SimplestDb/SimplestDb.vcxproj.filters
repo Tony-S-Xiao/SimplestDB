@@ -63,6 +63,12 @@
     <ClCompile Include="simplestdb_token_sqlquery.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplestdb_token_sqlcreate.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="simplestdb_parser.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplestdb_row.h">
@@ -111,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_token_sqlquery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_token_sqlcreate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

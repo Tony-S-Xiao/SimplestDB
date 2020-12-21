@@ -5,7 +5,7 @@
 
 sdb::Token::Token() {}
 void sdb::Token::setWellFormedFlag(bool state) {
-		well_formed_ = state;
+	well_formed_ = state;
 	return;
 }
 bool sdb::Token::getWellFormedFlag() {

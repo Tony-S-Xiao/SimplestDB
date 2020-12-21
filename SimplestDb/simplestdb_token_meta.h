@@ -15,5 +15,3 @@ class MetaToken : public Token {
 };
 }  // namespace sdb
 #endif // !SIMPLESTDB_TOKEN_META_H_
-
-

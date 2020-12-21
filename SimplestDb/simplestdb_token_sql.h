@@ -8,14 +8,14 @@
 namespace sdb {
 class SQLToken : public Token {
 public:
-  void setName(std::string);
-  std::string getName();
+  void setTableName(std::string);
+  std::string getTableName();
   void pushBackColumnName(std::string);
   void pushBackColumnType(SQLType);
   std::vector<std::string> getColumnNames();
   std::vector<SQLType> getColumnTypes();
 protected:
-  SQLToken() {};
+  SQLToken();
 private:
   std::string table_name_{};
   std::vector<std::string> column_names_{};

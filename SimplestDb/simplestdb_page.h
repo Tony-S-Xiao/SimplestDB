@@ -30,6 +30,7 @@ public:
 		// Takes ownership of the array of bytes.
 		SlottedPage(std::unique_ptr<std::array<std::byte, kPageSize>>&&);
   SlottedPage(std::array<std::byte, kPageSize>*);
+		SlottedPage(const SlottedPage& to_copy);
 		~SlottedPage();
 		// Gets the address of the array within the page.
 		// Used to write the block of data into the disk.

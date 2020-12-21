@@ -19,8 +19,6 @@ bool sdb::DiskManager::open(std::string filename)
 	file.open(filename, std::ios::out | std::ios::in | std::ios::binary);
 	if (!file.good()) {
 		file.clear();
-		file.open(filename, std::ios::out);
-		file.close();
 		file.open(filename, std::ios::out | std::ios::in | std::ios::binary);
 	}
 	return file.good();
@@ -38,7 +36,7 @@ sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
 	if (file.good() && index * static_cast<long long int>(kPageSize) < file.tellg()) {
 		std::array<std::byte, kPageSize>* temp{ new std::array<std::byte, kPageSize>{} };
 		file.clear();
-		file.seekg(index * static_cast<long long int>(kPageSize));
+		file.seekg(index * static_cast<long long int>(kPageSize), std::ios::beg);
 		file.read(reinterpret_cast<char*>(&(temp)[0]), kPageSize);
 		std::unique_ptr<SlottedPage> result{ new SlottedPage(temp) };
 		cache->insert(index, std::move(result));
@@ -49,11 +47,10 @@ sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
 
 bool sdb::DiskManager::writeToSlot(SlottedPage* to_write, size_t index)
 {
-		file.seekp(0, std::ios::end);
+		file.seekp(0, std::ios::beg);
 	if (file.good()) {
-		file.seekp(index * static_cast<long long int>(kPageSize));
+		file.seekp(index * static_cast<long long int>(kPageSize), std::ios::beg);
 		file.write(reinterpret_cast<char*>(to_write->getPageStart()), kPageSize);
-		std::cout << "Wrote: " << index * static_cast<long long int>(kPageSize) << " " << file.good() << std::endl;
 		cache->erase(index);
 		return true;
 	}

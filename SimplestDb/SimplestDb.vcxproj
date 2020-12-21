@@ -24,6 +24,7 @@
     <ClCompile Include="simplestdb_disk_manager.cc" />
     <ClCompile Include="simplestdb_page.cc" />
     <ClCompile Include="simplestdb_page_footer.cc" />
+    <ClCompile Include="simplestdb_parser.cc" />
     <ClCompile Include="simplestdb_row.cc" />
     <ClCompile Include="simplestdb_tableheaderrow.cc" />
     <ClCompile Include="simplestdb_tablepointerrow.cc" />
@@ -31,6 +32,7 @@
     <ClCompile Include="simplestdb_token.cc" />
     <ClCompile Include="simplestdb_token_meta.cc" />
     <ClCompile Include="simplestdb_token_sql.cc" />
+    <ClCompile Include="simplestdb_token_sqlcreate.cc" />
     <ClCompile Include="simplestdb_token_sqlquery.cc" />
     <ClCompile Include="simplestdb_token_sqlwritetoken.cc" />
     <ClCompile Include="simplestdb_util.cc" />
@@ -43,6 +45,7 @@
     <ClInclude Include="simplestdb_disk_manager.h" />
     <ClInclude Include="simplestdb_page.h" />
     <ClInclude Include="simplestdb_page_footer.h" />
+    <ClInclude Include="simplestdb_parser.h" />
     <ClInclude Include="simplestdb_row.h" />
     <ClInclude Include="simplestdb_tableheaderrow.h" />
     <ClInclude Include="simplestdb_tablepointerrow.h" />
@@ -50,6 +53,7 @@
     <ClInclude Include="simplestdb_token.h" />
     <ClInclude Include="simplestdb_token_meta.h" />
     <ClInclude Include="simplestdb_token_sql.h" />
+    <ClInclude Include="simplestdb_token_sqlcreate.h" />
     <ClInclude Include="simplestdb_token_sqlquery.h" />
     <ClInclude Include="simplestdb_token_sqlwritetoken.h" />
     <ClInclude Include="simplestdb_util.h" />

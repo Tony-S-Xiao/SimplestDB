@@ -20,7 +20,7 @@ enum class Operation : unsigned char {
   WRITE = 1 << 1,
   NEW = 1 << 2,
   OPEN = 1 << 3,
-  CD = 1 << 4,
+  CLOSE = 1 << 4,
   HELP = 1 << 5,
   CREATE = 1 << 6
 };

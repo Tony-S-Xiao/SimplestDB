@@ -1,4 +1,64 @@
-﻿  simplestdb_disk_manager.cc
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(67,52): warning C4244: 'argument': conversion from 'std::streamoff' to 'size_t', possible loss of data
-C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(68,38): warning C4244: 'return': conversion from 'std::streamoff' to 'size_t', possible loss of data
+﻿  simplestdb_test.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(37,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(69,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(81,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(82,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(84,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(87,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(91,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(92,5): warning C4805: '==': unsafe mix of type '_Ty' and type 'bool' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(94,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(97,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(116,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(103,8): message : see declaration of 'test_block_1'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(117,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(104,8): message : see declaration of 'test_block_2'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(126,25): warning C4456: declaration of 'test_block_1' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(103,8): message : see declaration of 'test_block_1'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(127,25): warning C4456: declaration of 'test_block_2' hides previous local declaration
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(104,8): message : see declaration of 'test_block_2'
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(174,128): warning C4267: 'argument': conversion from 'size_t' to 'sdb::size16_t', possible loss of data
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(188,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(189,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(211,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(212,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(223,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(224,3): warning C4805: '==': unsafe mix of type 'bool' and type '_Ty' in operation
+          with
+          [
+              _Ty=sdb::bool8_t
+          ]
+  simplestdb_token_sql.cc
+  simplestdb_token_sqlcreate.cc
+  simplestdb_token_sqlquery.cc
+  simplestdb_token_sqlwritetoken.cc
+  Generating Code...
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

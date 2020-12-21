@@ -7,6 +7,8 @@
 #include"simplestdb_page.h"
 #include"simplestdb_disk_manager.h"
 #include"lru_cache.h"
+#include"simplestdb_token_meta.h"
+#include"simplestdb_token_sqlcreate.h"
 
 #include<iostream>
 #include<string>
@@ -185,8 +187,9 @@ void sdb::test() {
   assert(row.getInteger(5) == data_int[5]);
   assert(row.getBoolean(0) == data_bool[0]);
   assert(row.getBoolean(1) == data_bool[1]);
+  sdb::SlottedPage* page_negative = new sdb::SlottedPage(*page_zero);
   disk_man.writeToSlot(page_zero, 0);
-  disk_man.writeToSlot(page_zero, 1);
+  disk_man.writeToSlot(page_negative, 1); //LRU CACHE DELETES THE PAGE_ZERO WHEN WRITE IS CALLED
   disk_man.closeCurrFile();
   disk_man.open("test_db.sdb");
   sdb::SlottedPage* page_one = disk_man.readFromSlot(0);
@@ -219,4 +222,27 @@ void sdb::test() {
   assert(row2.getInteger(5) == data_int[5]);
   assert(row2.getBoolean(0) == data_bool[0]);
   assert(row2.getBoolean(1) == data_bool[1]);
+  // meta token tests
+  sdb::MetaToken meta_token_1{};
+  meta_token_1.setTokenType(sdb::Operation::OPEN);
+  meta_token_1.setData("wow");
+  assert(meta_token_1.getData() == std::string("wow"));
+  assert(meta_token_1.getTokenType() == sdb::Operation::OPEN);
+  sdb::CreateTableToken table_token_1{};
+  table_token_1.setTokenType(sdb::Operation::CREATE);
+  table_token_1.setTableName("table-testing!");
+  table_token_1.pushBackColumnName("people");
+  table_token_1.pushBackColumnName("tony");
+  table_token_1.pushBackColumnName("wow");
+  table_token_1.pushBackColumnType(sdb::SQLType::VARCHAR);
+  table_token_1.pushBackColumnType(sdb::SQLType::VARCHAR);
+  table_token_1.pushBackColumnType(sdb::SQLType::INTEGER);
+  std::vector<std::string> column_names_test(table_token_1.getColumnNames());
+  std::vector<SQLType> column_types_test(table_token_1.getColumnTypes());
+  assert(column_names_test[0] == std::string("people"));
+  assert(column_names_test[1] == std::string("tony"));
+  assert(column_names_test[2] == std::string("wow"));
+  assert(column_types_test[0] == sdb::SQLType::VARCHAR);
+  assert(column_types_test[1] == sdb::SQLType::VARCHAR);
+  assert(column_types_test[2] == sdb::SQLType::INTEGER);
 }

@@ -2,10 +2,12 @@
 
 #include<string>
 #include<vector>
-void sdb::SQLToken::setName(std::string name) {
+
+sdb::SQLToken::SQLToken() : Token() {};
+void sdb::SQLToken::setTableName(std::string name) {
 		table_name_ = name;
 }
-std::string sdb::SQLToken::getName() {
+std::string sdb::SQLToken::getTableName() {
 		return table_name_;
 }
 void sdb::SQLToken::pushBackColumnName(std::string _name) {
