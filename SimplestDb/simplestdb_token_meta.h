@@ -1,12 +1,11 @@
 #ifndef SIMPLESTDB_TOKEN_META_H_
 #define SIMPLESTDB_TOKEN_META_H_
-#include"simplestdb_token.h"
 
 #include<string>
 
 namespace sdb {
 
-class MetaToken : public Token {
+class MetaToken {
  public:
   void setData(std::string);
   std::string getData();

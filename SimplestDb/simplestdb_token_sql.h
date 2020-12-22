@@ -1,12 +1,14 @@
 #ifndef SIMPLESTDB_TOKEN_SQL_H_
 #define SIMPLESTDB_TOKEN_SQL_H_
 
-#include"simplestdb_token.h"
+#include"simplestdb_enum_sqltype.h"
 
 #include<string>
 #include<vector>
+
 namespace sdb {
-class SQLToken : public Token {
+// This class is the base class for the sql operation tokens.
+class SQLToken {
 public:
   void setTableName(std::string);
   std::string getTableName();

@@ -1,44 +1,49 @@
 #ifndef SIMPLESTDB_TOKEN_H_
 #define SIMPLESTDB_TOKEN_H_
+#include"simplestdb_enum_operation.h"
+#include"simplestdb_token_meta.h"
+#include"simplestdb_token_sqlcreate.h"
+#include"simplestdb_token_sqlquery.h"
+#include"simplestdb_token_sqlwritetoken.h"
 
 #include<string>
 #include<vector>
+#include<memory>
 
 namespace sdb {
-// Denotes the data type of the value.
-enum class SQLType : unsigned char { 
-  NUL = 0,
-  VARCHAR = 1 << 0,
-  BOOLEAN = 1 << 1,
-  INTEGER = 1 << 2,
-  DATETIME = 1 << 3
-};
-// Denotes the operation being done.
-enum class Operation : unsigned char { 
-  NUL = 0,
-  READ = 1 << 0,
-  WRITE = 1 << 1,
-  NEW = 1 << 2,
-  OPEN = 1 << 3,
-  CLOSE = 1 << 4,
-  HELP = 1 << 5,
-  CREATE = 1 << 6
-};
-
+// This class is the output of the parser.
+// Aggragates some different token types.
+// Can be either meta token or sql token.
 class Token {
  public:
+  Token(std::unique_ptr<MetaToken>&&);
+  Token(std::unique_ptr<CreateTableToken>&&);
+  Token(std::unique_ptr<QueryToken>&&);
+  Token(std::unique_ptr<WriteToken>&&);
+  Token(MetaToken*);
+  Token(CreateTableToken*);
+  Token(QueryToken*);
+  Token(WriteToken*);
+  Token();
+  // Need to call the right template for the correct type of token
+  // Returns nullptr if not correct.
+  template<class C>
+  C* get();
   void setWellFormedFlag(bool);
   bool getWellFormedFlag();
-  void setTokenType(Operation);
+  void setOperationType(Operation);
+  // This is used to determine what type of token this object is.
+  // See Operation.
   Operation getTokenType();
- protected:
-  Token();
  private:
   // Tokens should be well formed before any operation is done with them.
   bool well_formed_{ false };
   Operation operation_{ Operation::NUL };
+  // Only one of these is non nullptr. 
+  std::unique_ptr<MetaToken> meta_token_ptr_{};
+  std::unique_ptr<CreateTableToken> create_table_token_ptr_{};
+  std::unique_ptr<QueryToken> query_token_ptr_{};
+  std::unique_ptr<WriteToken> write_token_ptr_{};
 };
-
 }//namespace sdb
-
 #endif // !SIMPLESTDB_TOKEN_H_

@@ -6,8 +6,7 @@ namespace sdb {
 
 class QueryToken : public SQLToken {
  public:
-  QueryToken();
-  ~QueryToken();
+
   void setCondition(std::string);
   std::string getCondition();
  private:
@@ -15,4 +14,3 @@ class QueryToken : public SQLToken {
 };
 }  // namespace sdb
 #endif // !SIMPLESTDB_TOKEN_SQLQUERY_H_
-

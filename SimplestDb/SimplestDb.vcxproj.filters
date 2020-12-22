@@ -122,6 +122,12 @@
     <ClInclude Include="simplestdb_token_sqlcreate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="simplestdb_enum_sqltype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_enum_operation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="simplestdb_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>

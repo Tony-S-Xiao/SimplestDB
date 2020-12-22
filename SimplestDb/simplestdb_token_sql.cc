@@ -3,7 +3,7 @@
 #include<string>
 #include<vector>
 
-sdb::SQLToken::SQLToken() : Token() {};
+sdb::SQLToken::SQLToken() {};
 void sdb::SQLToken::setTableName(std::string name) {
 		table_name_ = name;
 }

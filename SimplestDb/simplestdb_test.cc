@@ -9,6 +9,8 @@
 #include"lru_cache.h"
 #include"simplestdb_token_meta.h"
 #include"simplestdb_token_sqlcreate.h"
+#include"simplestdb_token.h"
+#include"simplestdb_token_sqlquery.h"
 
 #include<iostream>
 #include<string>
@@ -223,26 +225,26 @@ void sdb::test() {
   assert(row2.getBoolean(0) == data_bool[0]);
   assert(row2.getBoolean(1) == data_bool[1]);
   // meta token tests
-  sdb::MetaToken meta_token_1{};
-  meta_token_1.setTokenType(sdb::Operation::OPEN);
-  meta_token_1.setData("wow");
-  assert(meta_token_1.getData() == std::string("wow"));
-  assert(meta_token_1.getTokenType() == sdb::Operation::OPEN);
-  sdb::CreateTableToken table_token_1{};
-  table_token_1.setTokenType(sdb::Operation::CREATE);
-  table_token_1.setTableName("table-testing!");
-  table_token_1.pushBackColumnName("people");
-  table_token_1.pushBackColumnName("tony");
-  table_token_1.pushBackColumnName("wow");
-  table_token_1.pushBackColumnType(sdb::SQLType::VARCHAR);
-  table_token_1.pushBackColumnType(sdb::SQLType::VARCHAR);
-  table_token_1.pushBackColumnType(sdb::SQLType::INTEGER);
-  std::vector<std::string> column_names_test(table_token_1.getColumnNames());
-  std::vector<SQLType> column_types_test(table_token_1.getColumnTypes());
-  assert(column_names_test[0] == std::string("people"));
-  assert(column_names_test[1] == std::string("tony"));
-  assert(column_names_test[2] == std::string("wow"));
-  assert(column_types_test[0] == sdb::SQLType::VARCHAR);
-  assert(column_types_test[1] == sdb::SQLType::VARCHAR);
-  assert(column_types_test[2] == sdb::SQLType::INTEGER);
+  for (int i = 0; i < 100000; ++i) {
+  sdb::Token meta_token_test(new sdb::MetaToken());
+  meta_token_test.setOperationType(sdb::Operation::HELP);
+  assert(meta_token_test.getTokenType() == sdb::Operation::HELP);
+  meta_token_test.get<MetaToken>()->setData("me");
+  assert(meta_token_test.get<MetaToken>()->getData() == std::string{ "me" });
+  sdb::Token create_table_token_test{ new sdb::CreateTableToken() };
+  create_table_token_test.setOperationType(sdb::Operation::CREATE);
+  assert(create_table_token_test.getTokenType() == sdb::Operation::CREATE);
+  create_table_token_test.get<CreateTableToken>()->setTableName("wow tony");
+  create_table_token_test.setWellFormedFlag(true);
+  create_table_token_test.get<CreateTableToken>()->pushBackColumnName("users");
+  create_table_token_test.get<CreateTableToken>()->pushBackColumnName("emails");
+  assert(create_table_token_test.get<CreateTableToken>()->getTableName() == std::string("wow tony"));
+  assert(create_table_token_test.get<CreateTableToken>()->getColumnNames()[0] == std::string("users"));
+  assert(create_table_token_test.get<CreateTableToken>()->getColumnNames()[1] == std::string("emails"));
+  assert(create_table_token_test.getWellFormedFlag() == true);
+  sdb::Token query_token_test(new sdb::QueryToken());
+  query_token_test.get<QueryToken>()->setCondition("<");
+  assert(query_token_test.get<QueryToken>()->getCondition() == std::string("<"));
+  }
+
 }

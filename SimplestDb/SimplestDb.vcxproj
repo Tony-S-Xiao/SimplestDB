@@ -43,6 +43,8 @@
     <ClInclude Include="simplestdb_datarow.h" />
     <ClInclude Include="simplestdb_dbrow.h" />
     <ClInclude Include="simplestdb_disk_manager.h" />
+    <ClInclude Include="simplestdb_enum_operation.h" />
+    <ClInclude Include="simplestdb_enum_sqltype.h" />
     <ClInclude Include="simplestdb_page.h" />
     <ClInclude Include="simplestdb_page_footer.h" />
     <ClInclude Include="simplestdb_parser.h" />
