@@ -16,14 +16,14 @@ namespace sdb {
 // Can be either meta token or sql token.
 class Token {
  public:
-  Token(std::unique_ptr<MetaToken>&&);
-  Token(std::unique_ptr<CreateTableToken>&&);
-  Token(std::unique_ptr<QueryToken>&&);
-  Token(std::unique_ptr<WriteToken>&&);
-  Token(MetaToken*);
-  Token(CreateTableToken*);
-  Token(QueryToken*);
-  Token(WriteToken*);
+  Token(std::unique_ptr<MetaToken>&&, Operation operation = Operation::NUL);
+  Token(std::unique_ptr<CreateTableToken>&&, Operation operation = Operation::NUL);
+  Token(std::unique_ptr<QueryToken>&&, Operation operation = Operation::NUL);
+  Token(std::unique_ptr<WriteToken>&&, Operation operation = Operation::NUL);
+  Token(MetaToken*, Operation operation = Operation::NUL);
+  Token(CreateTableToken*, Operation operation = Operation::NUL);
+  Token(QueryToken*, Operation operation = Operation::NUL);
+  Token(WriteToken*, Operation operation = Operation::NUL);
   Token();
   // Need to call the right template for the correct type of token
   // Returns nullptr if not correct.

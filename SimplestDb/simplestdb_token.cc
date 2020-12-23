@@ -8,29 +8,37 @@
 #include<vector>
 #include<memory>
 
-sdb::Token::Token(std::unique_ptr<MetaToken>&& token) :
-		meta_token_ptr_{ std::move(token) }
+sdb::Token::Token(std::unique_ptr<MetaToken>&& token, Operation operation) :
+		meta_token_ptr_{ std::move(token) },
+		operation_(operation)
 {}
-sdb::Token::Token(std::unique_ptr<CreateTableToken>&& token) :
-		create_table_token_ptr_{ std::move(token) }
+sdb::Token::Token(std::unique_ptr<CreateTableToken>&& token, Operation operation) :
+		create_table_token_ptr_{ std::move(token) },
+		operation_(operation)
 {}
-sdb::Token::Token(std::unique_ptr<QueryToken>&& token) :
-		query_token_ptr_{ std::move(token) }
+sdb::Token::Token(std::unique_ptr<QueryToken>&& token, Operation operation) :
+		query_token_ptr_{ std::move(token) },
+		operation_(operation)
 {}
-sdb::Token::Token(std::unique_ptr<WriteToken>&& token) :
-		write_token_ptr_{ std::move(token) }
+sdb::Token::Token(std::unique_ptr<WriteToken>&& token, Operation operation) :
+		write_token_ptr_{ std::move(token) },
+		operation_(operation)
 {}
-sdb::Token::Token(MetaToken* token) :
-		meta_token_ptr_(token)
+sdb::Token::Token(MetaToken* token, Operation operation) :
+		meta_token_ptr_(token),
+		operation_(operation)
 {}
-sdb::Token::Token(CreateTableToken* token) :
-		create_table_token_ptr_(token)
+sdb::Token::Token(CreateTableToken* token, Operation operation) :
+		create_table_token_ptr_(token),
+		operation_(operation)
 {}
-sdb::Token::Token(QueryToken* token) :
-		query_token_ptr_(token)
+sdb::Token::Token(QueryToken* token, Operation operation) :
+		query_token_ptr_(token),
+		operation_(operation)
 {}
-sdb::Token::Token(WriteToken* token) :
-		write_token_ptr_(token)
+sdb::Token::Token(WriteToken* token, Operation operation) :
+		write_token_ptr_(token),
+		operation_(operation)
 {}
 sdb::Token::Token() {}
 template<class C>
