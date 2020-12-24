@@ -248,25 +248,6 @@ void sdb::test() {
   assert(query_token_test.get<QueryToken>()->getCondition() == std::string("<"));
   }
   // parser tests
-  for (int i = 0; i < 100000; ++i) {
-  sdb::Parser parser;
-  sdb::Token* test_parse1 = parser.createToken(".help");
-  sdb::Token* test_parse2 = parser.createToken(".open test_sdb.db");
-  sdb::Token* test_parse3 = parser.createToken(".close");
-  sdb::Token* test_parse4 = parser.createToken(".new testing_sdb.db");
-  sdb::Token* test_parse5 = parser.createToken("hliawfeuhijlu");
-  assert(test_parse1->getTokenType() == sdb::Operation::HELP);
-  assert(test_parse2->getTokenType() == sdb::Operation::OPEN);
-  assert(test_parse3->getTokenType() == sdb::Operation::CLOSE);
-  assert(test_parse4->getTokenType() == sdb::Operation::NEW);
-  assert(test_parse5->getTokenType() == sdb::Operation::NUL);
-  assert(test_parse2->get<MetaToken>()->getData() == std::string("test_sdb.db"));
-  assert(test_parse4->get<MetaToken>()->getData() == std::string("testing_sdb.db"));
-  delete test_parse1;
-  delete test_parse2;
-  delete test_parse3;
-  delete test_parse4;
-  delete test_parse5;
-  }
+
 
 }
