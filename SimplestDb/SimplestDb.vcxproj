@@ -24,6 +24,7 @@
     <ClCompile Include="simplestdb_disk_manager.cc" />
     <ClCompile Include="simplestdb_page.cc" />
     <ClCompile Include="simplestdb_page_footer.cc" />
+    <ClCompile Include="simplestdb_parser_statemachine.cc" />
     <ClCompile Include="simplestdb_parser.cc" />
     <ClCompile Include="simplestdb_row.cc" />
     <ClCompile Include="simplestdb_tableheaderrow.cc" />
@@ -48,6 +49,7 @@
     <ClInclude Include="simplestdb_page.h" />
     <ClInclude Include="simplestdb_page_footer.h" />
     <ClInclude Include="simplestdb_parser.h" />
+    <ClInclude Include="simplestdb_parser_statemachine.h" />
     <ClInclude Include="simplestdb_row.h" />
     <ClInclude Include="simplestdb_tableheaderrow.h" />
     <ClInclude Include="simplestdb_tablepointerrow.h" />

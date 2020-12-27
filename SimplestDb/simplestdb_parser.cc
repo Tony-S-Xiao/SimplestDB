@@ -1,5 +1,6 @@
 #include"simplestdb_parser.h"
 #include"simplestdb_token.h"
+#include"simplestdb_parser_statemachine.h"
 
 #include<string>
 #include<vector>
@@ -7,9 +8,9 @@
 #include<cstdint>
 #include<algorithm>
 
-std::vector<sdb::Parser::SMToken> sdb::Parser::tokenize(std::string input) {
+std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
   std::string copy(input);
-  std::vector<sdb::Parser::SMToken> res{};
+  std::vector<sdb::SMToken> res{};
   std::for_each(copy.begin(), copy.end(), [](char& c) {
     if (c >= 'A' && c <= 'Z') c = tolower(c);
     });
@@ -38,3 +39,6 @@ std::vector<sdb::Parser::SMToken> sdb::Parser::tokenize(std::string input) {
   }
   return res;
 } 
+sdb::Token* sdb::Parser::StateMachine::createToken(std::vector<sdb::SMToken>&& tokens) {
+
+}

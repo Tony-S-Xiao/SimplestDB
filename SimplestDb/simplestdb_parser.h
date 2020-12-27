@@ -2,6 +2,7 @@
 #define SIMPLESTDB_PARSER_H_
 #include"simplestdb_token.h"
 #include"simplestdb_enum_operation.h"
+#include"simplestdb_parser_statemachine.h"
 
 #include<string>
 #include<vector>
@@ -14,31 +15,9 @@ namespace sdb {
 
 class Parser {
  public:
-
- private:
   Parser();
-  enum class SMType {
-    NUL,
-    METAOPENTOKEN,
-    METACLOSETOKEN,
-    METAHELPTOKEN,
-    METANEWTOKEN,
-    SQLSELECT,
-    SQLCREATE,
-    SQLTABLE,
-    SQLFROM,
-    SQLWHERE,
-    SQLINSERT,
-    SQLTABLE,
-    SQLTYPEINT,
-    SQLTYPEVARCHAR,
-    SQLTYPEBOOL
-  };
-  struct SMToken {
-    SMType type_{ SMType::NUL };
-    std::string data_{ "" };
-  };
-  static const inline std::unordered_map<std::string, SMType> lookup_ = {
+ private:
+  const std::unordered_map<std::string, SMType> lookup_ = {
     {".open", SMType::METAOPENTOKEN},
     {".close", SMType::METACLOSETOKEN},
     {".help", SMType::METAHELPTOKEN},
@@ -51,9 +30,11 @@ class Parser {
     {"table", SMType::SQLTABLE},
     {"int", SMType::SQLTYPEINT},
     {"varchar", SMType::SQLTYPEVARCHAR},
-    {"boolean", SMType::SQLTYPEBOOL}
+    {"boolean", SMType::SQLTYPEBOOL},
+    {"*", SMType::SQLALL}
   };
-  static std::vector<SMToken> tokenize(std::string);
+  std::vector<SMToken> tokenize(std::string);
+  StateMachine sm_{};
 };
 }//namespace sdb
 
