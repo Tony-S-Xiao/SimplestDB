@@ -248,6 +248,28 @@ void sdb::test() {
   assert(query_token_test.get<QueryToken>()->getCondition() == std::string("<"));
   }
   // parser tests
-
+  sdb::Parser parsor{};
+  std::unique_ptr<Token> test_parse1 = parsor.parse("CREATE TABLE users (name INT, email VARCHAR)");
+  assert(test_parse1->getTokenType() == sdb::Operation::CREATE);
+  assert(test_parse1->get<CreateTableToken>()->getTableName() == std::string("users"));
+  assert(test_parse1->get<CreateTableToken>()->getColumnNames()[0] == std::string("name"));
+  assert(test_parse1->get<CreateTableToken>()->getColumnNames()[1] == std::string("email"));
+  assert(test_parse1->get<CreateTableToken>()->getColumnTypes()[0] == SQLType::INTEGER);
+  assert(test_parse1->get<CreateTableToken>()->getColumnTypes()[1] == SQLType::VARCHAR);
+  std::unique_ptr<Token> test_parse2 = parsor.parse("CREATE TALE users (name INT, email VARCHAR)");
+  assert(test_parse2 == nullptr);
+  std::unique_ptr<Token> test_parse3 = parsor.parse("INSERT INTO users (wow, tony, bob, alex) VALUES (tony, tony, 1234, aa)");
+  assert(test_parse3->getTokenType() == sdb::Operation::WRITE);
+  assert(test_parse3->get<WriteToken>()->getTableName() == std::string("users"));
+  assert(test_parse3->get<WriteToken>()->getColumnNames()[0] == std::string("wow"));
+  assert(test_parse3->get<WriteToken>()->getColumnNames()[1] == std::string("tony"));
+  assert(test_parse3->get<WriteToken>()->getColumnNames()[2] == std::string("bob"));
+  assert(test_parse3->get<WriteToken>()->getColumnNames()[3] == std::string("alex"));
+  assert(test_parse3->get<WriteToken>()->getData()[0] == std::string("tony"));
+  assert(test_parse3->get<WriteToken>()->getData()[1] == std::string("tony"));
+  assert(test_parse3->get<WriteToken>()->getData()[2] == std::string("1234"));
+  assert(test_parse3->get<WriteToken>()->getData()[3] == std::string("aa"));
+  std::unique_ptr<Token> test_parse4 = parsor.parse("INSERT INTO users (wow, tony, bob, alex) VALUS (tony, tony, 1234, aa)");
+  assert(test_parse4 == nullptr);
 
 }

@@ -16,6 +16,7 @@ namespace sdb {
 class Parser {
  public:
   Parser();
+  std::unique_ptr<Token> parse(std::string);
  private:
   const std::unordered_map<std::string, SMType> lookup_ = {
     {".open", SMType::METAOPENTOKEN},
@@ -27,10 +28,12 @@ class Parser {
     {"from", SMType::SQLFROM},
     {"where", SMType::SQLWHERE},
     {"insert", SMType::SQLINSERT},
+    {"into", SMType::SQLINTO},
     {"table", SMType::SQLTABLE},
     {"int", SMType::SQLTYPEINT},
     {"varchar", SMType::SQLTYPEVARCHAR},
     {"boolean", SMType::SQLTYPEBOOL},
+    {"values", SMType::SQLTYPEVALUE},
     {"*", SMType::SQLALL}
   };
   std::vector<SMToken> tokenize(std::string);

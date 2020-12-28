@@ -8,6 +8,13 @@
 #include<cstdint>
 #include<algorithm>
 
+sdb::Parser::Parser() : sm_(){
+}
+std::unique_ptr<sdb::Token> sdb::Parser::parse(std::string input) {
+  std::unique_ptr<sdb::Token> curr = sm_.createToken(tokenize(input));
+  sm_.reset();
+  return curr;
+}
 std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
   std::string copy(input);
   std::vector<sdb::SMToken> res{};
@@ -23,9 +30,9 @@ std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
   std::vector<std::string> to_be_tokenized{};
   std::vector<std::string> original_str{};
   for (int i = 0; i < copy.size(); ++i) {
-    int next_white_space{ copy.find_first_of(i, ' ') };
-    to_be_tokenized.push_back(copy.substr(i, next_white_space));
-    original_str.push_back(input.substr(i, next_white_space));
+    size_t next_white_space{ copy.find_first_of( ' ', i) };
+    to_be_tokenized.push_back(copy.substr(i, next_white_space - i));
+    original_str.push_back(input.substr(i, next_white_space - i));
     while (copy[next_white_space] == ' ') {
       ++next_white_space;
     }
@@ -39,6 +46,3 @@ std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
   }
   return res;
 } 
-sdb::Token* sdb::Parser::StateMachine::createToken(std::vector<sdb::SMToken>&& tokens) {
-
-}

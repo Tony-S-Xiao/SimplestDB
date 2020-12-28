@@ -57,57 +57,118 @@ bool sdb::StateMachine::next(SMToken next_state) {
 
     break;
   case 4:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<QueryToken>()->pushBackColumnName(next_state.data_);
+      state_ = 5;
+      return true;
+    }
+    else if (next_state.type_ == SMType::SQLALL) {
+      token_ptr_->get<QueryToken>()->pushBackColumnName("*");
+      state_ = 5;
+      return true;
+    }
     break;
   case 5:
-
+    if (next_state.type_ == SMType::SQLFROM) {
+      state_ = 7;
+      return true;
+    }
     break;
   case 6:
 
     break;
   case 7:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<QueryToken>()->setTableName(next_state.data_);
+      state_ = 8;
+      return true;
+    }
     break;
   case 8:
-
+    if (next_state.type_ == SMType::SQLWHERE) {
+      token_ptr_->get<QueryToken>()->setCondition(next_state.data_);
+      state_ = 9;
+      return true;
+    }
     break;
   case 9:
 
     break;
   case 10:
-
+    if (next_state.type_ == SMType::SQLTABLE) {
+      state_ = 11;
+      return true;
+    }
     break;
   case 11:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<CreateTableToken>()->setTableName(next_state.data_);
+      state_ = 12;
+      return true;
+    }
     break;
   case 12:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<CreateTableToken>()->pushBackColumnName(next_state.data_);
+      state_ = 13;
+      return true;
+    }
     break;
   case 13:
-
+    if (next_state.type_ == SMType::SQLTYPEBOOL) {
+      token_ptr_->get<CreateTableToken>()->pushBackColumnType(SQLType::BOOLEAN);
+      state_ = 12;
+      return true;
+    } else if (next_state.type_ == SMType::SQLTYPEINT) {
+      token_ptr_->get<CreateTableToken>()->pushBackColumnType(SQLType::INTEGER);
+      state_ = 12;
+      return true;
+    } else if (next_state.type_ == SMType::SQLTYPEVARCHAR) {
+      token_ptr_->get<CreateTableToken>()->pushBackColumnType(SQLType::VARCHAR);
+      state_ = 12;
+      return true;
+    }
     break;
   case 14:
-
+    if (next_state.type_ == SMType::SQLINTO) {
+      state_ = 15;
+      return true;
+    }
     break;
   case 15:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<WriteToken>()->setTableName(next_state.data_);
+      state_ = 16;
+      return true;
+    }
     break;
   case 16:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<WriteToken>()->pushBackColumnName(next_state.data_);
+      state_ = 16;
+      return true;
+    }
+    else if (next_state.type_ == SMType::SQLTYPEVALUE) {
+      state_ = 18;
+      return true;
+    }
     break;
   case 17:
 
     break;
   case 18:
-
+    if (next_state.type_ == SMType::NUL) {
+      token_ptr_->get<WriteToken>()->appendData(next_state.data_);
+      state_ = 18;
+      return true;
+    }
     break;
-  default:
-    reset();
   }
+  reset();
   return false;
 }
 
 void sdb::StateMachine::reset() {
-  state_ = 1;
+  state_ = 0;
   clear();
 }
