@@ -18,8 +18,8 @@ bool sdb::DiskManager::open(std::string filename)
 	// Must open in binary mode. Windows adds extra characters if not in binary mode!
 	file.open(filename, std::ios::out | std::ios::in | std::ios::binary);
 	if (!file.good()) {
-		file.clear();
-		file.open(filename, std::ios::out | std::ios::in | std::ios::binary);
+			file.clear();
+			file.open(filename, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
 	}
 	return file.good();
 }
@@ -62,9 +62,9 @@ size_t sdb::DiskManager::append(SlottedPage* to_write) {
 				file.clear();
 				file.seekp(0, std::ios::end);
 				writeToSlot(to_write, file.tellp() / kPageSize + 1);
-				return  file.tellp() / kPageSize + 1;
+				return file.tellp() / kPageSize + 1;
 		}
-		return false;
+		return 0;
 }
 
 void sdb::DiskManager::zeroOutSlot(size_t index) {
@@ -73,4 +73,7 @@ void sdb::DiskManager::zeroOutSlot(size_t index) {
 		file.seekg(index * static_cast<long long int>(kPageSize));
 		file.write(&kZeroPage[0], kPageSize);
 	}
+}
+bool sdb::DiskManager::isOpen() {
+		return file.is_open();
 }

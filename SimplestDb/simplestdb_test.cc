@@ -12,6 +12,7 @@
 #include"simplestdb_token.h"
 #include"simplestdb_token_sqlquery.h"
 #include"simplestdb_parser.h"
+#include"simplestdb_interpreter.h"
 
 #include<iostream>
 #include<string>
@@ -271,5 +272,20 @@ void sdb::test() {
   assert(test_parse3->get<WriteToken>()->getData()[3] == std::string("aa"));
   std::unique_ptr<Token> test_parse4 = parsor.parse("INSERT INTO users (wow, tony, bob, alex) VALUS (tony, tony, 1234, aa)");
   assert(test_parse4 == nullptr);
+  std::unique_ptr<Token> test_parse5 = parsor.parse("SELECT users FROM wowerz");
+  assert(test_parse5->getTokenType() == sdb::Operation::READ);
+  assert(test_parse5->get<QueryToken>()->getTableName() == std::string("wowerz"));
+  assert(test_parse5->get<QueryToken>()->getColumnNames()[0] == std::string("users"));
+  std::unique_ptr<Token> test_parse6 = parsor.parse("SELECT users F3ROM wowerz");
+  assert(test_parse6 == nullptr);
+  // interpreter tests
+  sdb::Interpreter interpreter{};
+  while (1) {
+  std::cout << "Type in command:" << std::endl;
+  std::string curr_command{};
+  std::getline(std::cin, curr_command);
+  interpreter.execute(*parsor.parse(curr_command));
+  }
+
 
 }

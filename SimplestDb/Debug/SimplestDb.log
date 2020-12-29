@@ -1,2 +1,4 @@
-﻿  simplestdb_parser_statemachine.cc
+﻿  simplestdb_disk_manager.cc
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(64,52): warning C4244: 'argument': conversion from 'std::streamoff' to 'size_t', possible loss of data
+C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_disk_manager.cc(65,37): warning C4244: 'return': conversion from 'std::streamoff' to 'size_t', possible loss of data
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

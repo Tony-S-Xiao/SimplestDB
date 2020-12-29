@@ -13,6 +13,11 @@ sdb::Parser::Parser() : sm_(){
 std::unique_ptr<sdb::Token> sdb::Parser::parse(std::string input) {
   std::unique_ptr<sdb::Token> curr = sm_.createToken(tokenize(input));
   sm_.reset();
+  if (curr != nullptr && 
+    curr->getTokenType() == Operation::WRITE &&
+    curr->get<WriteToken>()->getColumnNames().size() != curr->get<WriteToken>()->getData().size()) {
+      return nullptr;
+  }
   return curr;
 }
 std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
@@ -33,7 +38,7 @@ std::vector<sdb::SMToken> sdb::Parser::tokenize(std::string input) {
     size_t next_white_space{ copy.find_first_of( ' ', i) };
     to_be_tokenized.push_back(copy.substr(i, next_white_space - i));
     original_str.push_back(input.substr(i, next_white_space - i));
-    while (copy[next_white_space] == ' ') {
+    while (next_white_space < copy.size() && copy[next_white_space] == ' ') {
       ++next_white_space;
     }
     i = next_white_space - 1;

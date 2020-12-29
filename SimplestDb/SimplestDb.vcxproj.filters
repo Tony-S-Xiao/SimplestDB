@@ -72,6 +72,9 @@
     <ClCompile Include="simplestdb_parser_statemachine.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simplestdb_interpreter.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simplestdb_row.h">
@@ -135,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="simplestdb_parser_statemachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simplestdb_interpreter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
