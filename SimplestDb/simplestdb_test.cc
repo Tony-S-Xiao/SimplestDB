@@ -52,6 +52,7 @@ void sdb::test() {
   std::vector<std::byte> tableheaderrow_data(sdb::TableHeaderRow::calcSizeRequired(names, types), static_cast<std::byte>(0));
   assert(tableheaderrow_data.size() == 24 + 2 * 3 + 2);
   sdb::TableHeaderRow tableheaderrow_test(&*tableheaderrow_data.begin(), &*(tableheaderrow_data.end() - 1) + 1);
+  tableheaderrow_test.loadData(names, types);
   for (int i = 0; i < tableheaderrow_test.getNumOfCol(); ++i) {
     assert(tableheaderrow_test.getColumnName(i) == names[i]);
     assert(tableheaderrow_test.getColumnType(i) == types[i]);
@@ -279,13 +280,12 @@ void sdb::test() {
   std::unique_ptr<Token> test_parse6 = parsor.parse("SELECT users F3ROM wowerz");
   assert(test_parse6 == nullptr);
   // interpreter tests
-  sdb::Interpreter interpreter{};
-  while (1) {
-  std::cout << "Type in command:" << std::endl;
-  std::string curr_command{};
-  std::getline(std::cin, curr_command);
-  interpreter.execute(*parsor.parse(curr_command));
-  }
-
-
+  sdb::Interpreter interpo;
+  std::unique_ptr<Token> test_interpo1(parsor.parse("CREATE TABLE wowzers (users VARCHAR, email VARCHAR, age INT)"));
+  std::unique_ptr<Token> test_interpo_new(parsor.parse(".new fresher2.sdb"));
+  std::unique_ptr<Token> test_interpo_open(parsor.parse(".open fresher2.sdb"));
+  std::unique_ptr<Token> test_interpo_close(parsor.parse(".close"));
+  interpo.execute(*test_interpo_open);
+  interpo.execute(*test_interpo1);
+  interpo.execute(*test_interpo_close);
 }

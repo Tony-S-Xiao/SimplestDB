@@ -22,13 +22,13 @@ std::string sdb::TableHeaderRow::getColumnName(int i) {
     string_start = reinterpret_cast<char*>(row_begin_) + sizeof(uint16_t) + sizeof(uint16_t) * getNumOfCol();
   else {
     --trav;
-    string_start = reinterpret_cast<char*>(trav) + *trav;
+    string_start = reinterpret_cast<char*>(trav) + *trav + 1;
   }
   return std::string(string_start, string_end - string_start);
 }
 sdb::SQLType sdb::TableHeaderRow::getColumnType(int i) {
   unsigned short* trav = reinterpret_cast<unsigned short*>(start_of_pointers_) + i;
-  char* type_start = reinterpret_cast<char*>(num_of_col_) + *trav;
+  char* type_start = reinterpret_cast<char*>(trav) + *trav;
   switch (*type_start) {
   case static_cast<unsigned char>(SQLType::NUL):
     return SQLType::NUL;
@@ -59,11 +59,11 @@ void sdb::TableHeaderRow::loadData(const std::vector<std::string>& all_column_na
   }
   // Pointers needs additional offset.
   for (int i = 0; i < pointer_buffer.size(); ++i) {
-    pointer_buffer[i] += pointer_buffer.size() - 1 - i;
+    pointer_buffer[i] += pointer_buffer.size() * sizeof(OnRowPointer) - i * sizeof(OnRowPointer) - 1;
   }
   *num_of_col_ = static_cast<uint16_t>(all_column_names.size());
-  memcpy(start_of_pointers_, &pointer_buffer, pointer_buffer.size() * sizeof(OnRowPointer));
-  memcpy(start_of_pointers_ + pointer_buffer.size(), &byte_buffer, byte_buffer.size());
+  memcpy(start_of_pointers_, pointer_buffer.data(), pointer_buffer.size() * sizeof(OnRowPointer) );
+  memcpy(reinterpret_cast<char*>(start_of_pointers_) + pointer_buffer.size() * sizeof(OnRowPointer), byte_buffer.data(), byte_buffer.size());
 }
 size_t sdb::TableHeaderRow::calcSizeRequired(const std::vector<std::string>& all_column_names,
   const std::vector<SQLType>& all_types) {

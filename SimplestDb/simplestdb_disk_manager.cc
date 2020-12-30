@@ -61,8 +61,11 @@ size_t sdb::DiskManager::append(SlottedPage* to_write) {
 		if (file.good()) {
 				file.clear();
 				file.seekp(0, std::ios::end);
-				writeToSlot(to_write, file.tellp() / kPageSize + 1);
-				return file.tellp() / kPageSize + 1;
+				std::cout << static_cast<int>(file.tellp()) << std::endl;
+				writeToSlot(to_write, file.tellp() / kPageSize);
+				file.seekp(0, std::ios::end);
+				std::cout << static_cast<int>(file.tellp()) << std::endl;
+				return file.tellp() / kPageSize - 1;
 		}
 		return 0;
 }
