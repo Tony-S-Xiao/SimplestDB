@@ -47,7 +47,7 @@ public:
 		size16_t size();
 		// Returns [start, end), slot id of allocated block. returns nullptr, nullptr, 0 for size 0.
 		std::tuple<std::byte*, std::byte*, unsigned short> allocateBlock(size16_t bytes_required);
-		// Used to implement doublely-linked list.
+		// Used to implement doublely-linked list. Should default to 0 if no next/prev page.
 		OnDiskPointer getNextPage() const;
 		OnDiskPointer getPrevPage() const;
 		void setNextPage(OnDiskPointer index);
