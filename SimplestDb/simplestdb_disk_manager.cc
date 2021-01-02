@@ -39,6 +39,7 @@ sdb::SlottedPage* sdb::DiskManager::readFromSlot(size_t index) {
 		file.seekg(index * static_cast<long long int>(kPageSize), std::ios::beg);
 		file.read(reinterpret_cast<char*>(&(temp)[0]), kPageSize);
 		std::unique_ptr<SlottedPage> result{ new SlottedPage(temp) };
+		result->setPageID(index);
 		cache->insert(index, std::move(result));
 		return cache->find(index)->second.get();
 	}

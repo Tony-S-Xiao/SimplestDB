@@ -18,3 +18,9 @@ unsigned int sdb::TablePointerRow::getPageId() {
 unsigned short sdb::TablePointerRow::getSpaceAvailable() {
   return *space_available_on_page_;
 }
+size_t sdb::TablePointerRow::calcSizeRequired() {
+  return sizeof(OnDiskPointer) + sizeof(uint16_t);
+}
+bool sdb::TablePointerRow::empty() {
+  return space_available_on_page_ == nullptr || page_id_ == nullptr;
+}

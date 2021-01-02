@@ -1,4 +1,6 @@
-﻿  simplestdb_test.cc
+﻿  simplestdb_tabledirectory.cc
+  simplestdb_tablepointerrow.cc
+  simplestdb_test.cc
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(41,27): warning C4245: 'argument': conversion from 'int' to 'uint32_t', signed/unsigned mismatch
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(74,41): warning C4245: 'argument': conversion from 'int' to 'uint16_t', signed/unsigned mismatch
 C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(86,21): warning C4018: '<': signed/unsigned mismatch
@@ -56,4 +58,5 @@ C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\simplestdb_test.cc(229,3): warning 
           [
               _Ty=sdb::bool8_t
           ]
+  Generating Code...
   SimplestDb.vcxproj -> C:\Users\tonyt\mystuff\SimplestDB\SimplestDb\Debug\SimplestDb.exe

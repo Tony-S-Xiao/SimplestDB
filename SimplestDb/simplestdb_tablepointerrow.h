@@ -18,10 +18,11 @@ public:
   void setSpaceAvailable(uint16_t space);
   unsigned int getPageId();
   unsigned short getSpaceAvailable();
+  static size_t calcSizeRequired();
+  bool empty();
 private:
   uint16_t* space_available_on_page_;
   OnDiskPointer* page_id_;
 };
-
 }  // namspace sdb
 #endif // !SIMPLESTDB_TABLEPOINTERROW_H_

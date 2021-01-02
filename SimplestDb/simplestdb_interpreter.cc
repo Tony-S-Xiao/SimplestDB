@@ -120,25 +120,26 @@ void sdb::Interpreter::writeRowExecute(Token& to_execute) {
     }
   }
   // find page with enough space
-  size_t space_required = sdb::DataRow::calcSizeRequired(bool_load, int_load, datetime_load, varchar_load);
-  size_t new_index = findAvailableWrite(curr_table_header_page, space_required);
+  uint16_t space_required = sdb::DataRow::calcSizeRequired(bool_load, int_load, datetime_load, varchar_load);
+  std::pair<sdb::TablePointerRow, sdb::SlottedPage*> output_pair = findAvailableWrite(curr_table_header_page, space_required);
+  sdb::TablePointerRow& ptr_to_insert_page = output_pair.first;
+  sdb::SlottedPage* insert_page = output_pair.second;
   // write data
-  sdb::SlottedPage* curr_data_page = disk_manager_->readFromSlot(new_index);
-  auto allocated = curr_data_page->allocateBlock(space_required);
-  sdb::DataRow data_row{ std::get<0>(allocated), std::get<1>(allocated) };
-  data_row.loadData(bool_load, int_load, datetime_load, varchar_load);
-  disk_manager_->writeToSlot(curr_data_page, new_index);
-  // write pointer to directory
-  SlottedPage* seek_header_page = curr_table_header_page;
-  while (seek_header_page->getNextPage() != 0) {
-    if(seek_header_page->freeSpace() > sdb::TablePointerRow:: ) /////////////////////
+  if (!ptr_to_insert_page.empty()) {
+    sdb::SlottedPage* curr_data_page = disk_manager_->readFromSlot(ptr_to_insert_page.getPageId());
+    auto allocated = curr_data_page->allocateBlock(space_required);
+    sdb::DataRow data_row{ std::get<0>(allocated), std::get<1>(allocated) };
+    data_row.loadData(bool_load, int_load, datetime_load, varchar_load);
+    disk_manager_->writeToSlot(curr_data_page, ptr_to_insert_page.getPageId());
+    ptr_to_insert_page.setSpaceAvailable(ptr_to_insert_page.getSpaceAvailable() - space_required);
   }
+  // write pointer to directory
 }
-size_t sdb::Interpreter::findAvailableWrite(SlottedPage* first_header_page, size_t wanted_size) {
+std::pair<sdb::TablePointerRow, sdb::SlottedPage*> sdb::Interpreter::findAvailableWrite(SlottedPage* first_header_page, size_t wanted_size) {
   for (int i = 1; i < first_header_page->size(); ++i) {
     sdb::TablePointerRow space_available{ first_header_page->getBlock(i).first, first_header_page->getBlock(i).second };
     if (space_available.getSpaceAvailable() > wanted_size) {
-      return space_available.getPageId();
+      return  { space_available , first_header_page };
     }
   }
   while (first_header_page->getNextPage() != 0) {
@@ -146,12 +147,11 @@ size_t sdb::Interpreter::findAvailableWrite(SlottedPage* first_header_page, size
     for (int i = 0; i < curr_header_page->size(); ++i) {
       sdb::TablePointerRow space_available{ curr_header_page->getBlock(i).first, curr_header_page->getBlock(i).second };
       if (space_available.getSpaceAvailable() > wanted_size) {
-        return space_available.getPageId();
+        return { space_available , first_header_page };
       }
     }
   }
-  size_t new_page = appendNewPage();
-  return new_page;
+  return { {nullptr, nullptr} , nullptr };
 }
 size_t sdb::Interpreter::appendNewPage() {
   std::array<std::byte, kPageSize>* test1 = new std::array<std::byte, kPageSize>{};

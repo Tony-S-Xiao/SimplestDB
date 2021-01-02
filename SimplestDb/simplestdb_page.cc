@@ -83,3 +83,9 @@ void sdb::SlottedPage::setNextPage(OnDiskPointer index) {
 void sdb::SlottedPage::setPrevPage(OnDiskPointer index) {
 		*prev_page = index;
 }
+size_t sdb::SlottedPage::getPageId() {
+		return page_id_;
+}
+void sdb::SlottedPage::setPageID(size_t page_id) {
+		page_id_ = page_id;
+}

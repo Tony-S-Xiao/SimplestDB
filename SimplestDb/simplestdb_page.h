@@ -52,6 +52,8 @@ public:
 		OnDiskPointer getPrevPage() const;
 		void setNextPage(OnDiskPointer index);
 		void setPrevPage(OnDiskPointer index);
+		size_t getPageId();
+		void setPageID(size_t page_id);
 private:
 		std::unique_ptr<std::array<std::byte, kPageSize>> data_ptr_{};
 		// Footer used to keep track of the location of blocks.
@@ -61,6 +63,9 @@ private:
 		OnDiskPointer* prev_page{ nullptr };
 		// Gets the address of one byte on the page.
 		std::byte* getAddressOfElement(OnPagePointer index);
+		// This is the page id of the current page.
+		// Initialized when read from disk by disk manager.
+		size_t page_id_{ 0 };
 };
 } // namespace sdb
 #endif // !SIMPLESTDB_PAGE_H_

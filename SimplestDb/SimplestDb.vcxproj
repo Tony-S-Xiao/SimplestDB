@@ -28,6 +28,7 @@
     <ClCompile Include="simplestdb_parser_statemachine.cc" />
     <ClCompile Include="simplestdb_parser.cc" />
     <ClCompile Include="simplestdb_row.cc" />
+    <ClCompile Include="simplestdb_tabledirectory.cc" />
     <ClCompile Include="simplestdb_tableheaderrow.cc" />
     <ClCompile Include="simplestdb_tablepointerrow.cc" />
     <ClCompile Include="simplestdb_test.cc" />
@@ -53,6 +54,7 @@
     <ClInclude Include="simplestdb_parser.h" />
     <ClInclude Include="simplestdb_parser_statemachine.h" />
     <ClInclude Include="simplestdb_row.h" />
+    <ClInclude Include="simplestdb_tabledirectory.h" />
     <ClInclude Include="simplestdb_tableheaderrow.h" />
     <ClInclude Include="simplestdb_tablepointerrow.h" />
     <ClInclude Include="simplestdb_test.h" />
