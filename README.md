@@ -7,9 +7,9 @@ other than the C++ Standard Library.
 
 Currently supported SQL operations examples:
 
-CREATE TABLE users (email VARCHAR, id INT, premium BOOLEAN);
-INSERT INTO users (VARCHAR, INT, BOOLEAN) VALUES (johnsmith@gmail.com, 10022, false);
-SELECT email FROM users;
+CREATE TABLE users (email VARCHAR, id INT, premium BOOLEAN); <br/> 
+INSERT INTO users (VARCHAR, INT, BOOLEAN) VALUES (johnsmith@gmail.com, 10022, false); <br/>
+SELECT email FROM users; <br/>
 
 
 ## Components
