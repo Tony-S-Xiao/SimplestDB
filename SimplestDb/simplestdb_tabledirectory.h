@@ -19,6 +19,7 @@ public:
   void associateHeaderPage(sdb::SlottedPage*);
   SlottedPage* getCurrPage();
   bool nextPage();
+  bool prevPage();
   void reset();
 private:
   DiskManager* disk_man_{ nullptr };
